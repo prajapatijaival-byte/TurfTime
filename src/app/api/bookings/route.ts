@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 501 } // 501 Not Implemented (Honest HTTP semantics for Phase 1 prototype)
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Invalid JSON request payload.' },
       { status: 400 }

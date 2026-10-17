@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useId } from 'react';
+import React, { useState } from 'react';
 import { SAMPLE_VENUES, DEMO_TIME_SLOTS } from '@/data/venues';
 import { BookingFormData, FormErrors } from '@/types';
 import {
@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   X,
   AlertCircle,
-  HelpCircle,
 } from 'lucide-react';
 
 interface BookingFormProps {
@@ -23,28 +22,36 @@ interface BookingFormProps {
   preselectedDuration?: number;
 }
 
+const CURRENT_DEMO_DATE = '2026-10-18';
+
 export const BookingForm: React.FC<BookingFormProps> = ({
   preselectedVenueId,
   preselectedDuration,
 }) => {
-  const [todayStr, setTodayStr] = useState('2026-10-17');
+  const [prevVenueId, setPrevVenueId] = useState(preselectedVenueId);
+  const [prevDuration, setPrevDuration] = useState(preselectedDuration);
 
   const [formData, setFormData] = useState<BookingFormData>({
     fullName: '',
     email: '',
     phone: '',
     venueId: preselectedVenueId || SAMPLE_VENUES[0].id,
-    date: '2026-10-17',
+    date: CURRENT_DEMO_DATE,
     timeSlot: DEMO_TIME_SLOTS[4], // Prime evening slot default
     duration: preselectedDuration || 1,
     notes: '',
   });
 
-  useEffect(() => {
-    const current = new Date().toISOString().split('T')[0];
-    setTodayStr(current);
-    setFormData((prev) => (prev.date === '2026-10-17' ? { ...prev, date: current } : prev));
-  }, []);
+  // React pattern: adjust state during rendering when props change
+  if (preselectedVenueId !== prevVenueId || preselectedDuration !== prevDuration) {
+    setPrevVenueId(preselectedVenueId);
+    setPrevDuration(preselectedDuration);
+    setFormData((prev) => ({
+      ...prev,
+      venueId: preselectedVenueId,
+      ...(preselectedDuration ? { duration: preselectedDuration } : {}),
+    }));
+  }
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -54,17 +61,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     venueName: string;
     venueLocality: string;
   } | null>(null);
-
-  // Sync when prop changes
-  useEffect(() => {
-    if (preselectedVenueId) {
-      setFormData((prev) => ({
-        ...prev,
-        venueId: preselectedVenueId,
-        ...(preselectedDuration ? { duration: preselectedDuration } : {}),
-      }));
-    }
-  }, [preselectedVenueId, preselectedDuration]);
 
   // Find currently selected venue
   const selectedVenue =
@@ -104,7 +100,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
     if (!data.date) {
       errs.date = 'Please pick a booking date.';
-    } else if (data.date < todayStr) {
+    } else if (data.date < CURRENT_DEMO_DATE) {
       errs.date = 'Booking date cannot be in the past.';
     }
 
@@ -359,7 +355,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     <input
                       id="field-date"
                       type="date"
-                      min={todayStr}
+                      min={CURRENT_DEMO_DATE}
                       value={formData.date}
                       onChange={(e) => handleChange('date', e.target.value)}
                       onBlur={() => handleBlur('date')}

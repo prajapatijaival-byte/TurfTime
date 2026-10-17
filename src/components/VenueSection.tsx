@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { SAMPLE_VENUES, DEMO_PRICE_RANGE } from '@/data/venues';
-import { Venue } from '@/types';
+import { Venue, SportType } from '@/types';
 import { VenueCard } from './VenueCard';
 import { InteractiveFilters } from './InteractiveFilters';
 import { VenueModal } from './VenueModal';
@@ -36,7 +36,7 @@ export const VenueSection: React.FC<VenueSectionProps> = ({
 
       // 2. Sport Filter
       if (selectedSport !== 'All Sports') {
-        const matchesSport = venue.sports.includes(selectedSport as any);
+        const matchesSport = venue.sports.includes(selectedSport as SportType);
         if (!matchesSport) return false;
       }
 
