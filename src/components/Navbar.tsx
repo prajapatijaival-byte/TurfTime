@@ -139,10 +139,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
         </div>
       </div>
 
-      {/* Mobile Drawer Menu with smooth CSS height/opacity transition */}
+      {/* Mobile Drawer Menu with smooth CSS slide/height/opacity transition */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-out bg-[#0D141A] border-b border-[#23303B] ${
-          mobileMenuOpen ? 'max-h-96 opacity-100 py-4 px-4' : 'max-h-0 opacity-0 py-0 px-4 pointer-events-none'
+          mobileMenuOpen
+            ? 'max-h-96 opacity-100 translate-y-0 py-4 px-4'
+            : 'max-h-0 opacity-0 -translate-y-3 py-0 px-4 pointer-events-none'
         }`}
       >
         <div className="space-y-3">

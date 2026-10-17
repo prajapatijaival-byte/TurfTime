@@ -57,14 +57,14 @@ section[id] {
 }
 
 /* ==========================================================================
-   Phase 2.5: Premium Animation System & Micro-Interactions
+   Real, Visibly Noticeable Animations System
    ========================================================================== */
 
-/* Keyframe Animations */
-@keyframes heroEntrance {
+/* 1. Hero Entrance: Distinct, bold vertical rise and fade-in */
+@keyframes heroRiseUp {
   0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
   }
   100% {
     opacity: 1;
@@ -72,10 +72,88 @@ section[id] {
   }
 }
 
-@keyframes modalZoomIn {
+.animate-hero-rise {
+  animation: heroRiseUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-delay-1 {
+  animation-delay: 120ms;
+}
+
+.hero-delay-2 {
+  animation-delay: 240ms;
+}
+
+.hero-delay-3 {
+  animation-delay: 380ms;
+}
+
+.hero-delay-4 {
+  animation-delay: 520ms;
+}
+
+/* 2. Hero Image Ken Burns Continuous Subtle Zoom */
+@keyframes heroKenBurns {
+  0% {
+    transform: scale(1.0);
+  }
+  50% {
+    transform: scale(1.09);
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}
+
+.animate-hero-kenburns {
+  animation: heroKenBurns 18s ease-in-out infinite alternate;
+}
+
+/* 3. Primary CTA Moving Highlight / Shimmer & Pulse Glow */
+@keyframes limePulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(183, 255, 60, 0.4), 0 4px 14px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(183, 255, 60, 0.8), 0 0 55px rgba(183, 255, 60, 0.4);
+  }
+}
+
+.animate-cta-pulse {
+  animation: limePulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes shimmerSlide {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  40%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+  animation: shimmerSlide 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 4. Modal Entrance Pop & Zoom */
+@keyframes modalPopIn {
   0% {
     opacity: 0;
-    transform: scale(0.96) translateY(10px);
+    transform: scale(0.92) translateY(24px);
   }
   100% {
     opacity: 1;
@@ -83,15 +161,20 @@ section[id] {
   }
 }
 
-@keyframes priceHighlight {
+.animate-modal-pop {
+  animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 5. Dynamic Price Recalculation Pulse */
+@keyframes pricePop {
   0% {
     transform: scale(1);
     filter: brightness(1);
   }
-  50% {
-    transform: scale(1.05);
-    filter: brightness(1.25);
-    text-shadow: 0 0 14px rgba(183, 255, 60, 0.65);
+  40% {
+    transform: scale(1.18);
+    filter: brightness(1.4);
+    text-shadow: 0 0 18px rgba(183, 255, 60, 0.9);
   }
   100% {
     transform: scale(1);
@@ -99,68 +182,27 @@ section[id] {
   }
 }
 
+.animate-price-pop {
+  animation: pricePop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 6. Subtle Floating Ambient Animation */
 @keyframes subtleFloat {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
   }
-}
-
-/* Animation utility classes */
-.animate-hero-fade {
-  animation: heroEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-hero-delay-1 {
-  animation-delay: 100ms;
-}
-
-.animate-hero-delay-2 {
-  animation-delay: 200ms;
-}
-
-.animate-hero-delay-3 {
-  animation-delay: 300ms;
-}
-
-.animate-hero-delay-4 {
-  animation-delay: 400ms;
-}
-
-.animate-modal-in {
-  animation: modalZoomIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-price-pulse {
-  animation: priceHighlight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-subtle-float {
   animation: subtleFloat 4s ease-in-out infinite;
 }
 
-/* Scroll reveal system with zero JS failure penalty */
-.reveal-on-scroll {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
-}
-
-/* When JS is initialized and observing, hidden elements start faded and translated */
-html.js-ready .reveal-on-scroll:not(.revealed) {
-  opacity: 0;
-  transform: translateY(22px);
-}
-
-html.js-ready .reveal-on-scroll.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Accessibility: Respect Reduced Motion Preference */
+/* ==========================================================================
+   Accessibility: prefers-reduced-motion
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto !important;
@@ -175,11 +217,14 @@ html.js-ready .reveal-on-scroll.revealed {
     scroll-behavior: auto !important;
   }
 
-  .reveal-on-scroll,
-  html.js-ready .reveal-on-scroll:not(.revealed),
-  html.js-ready .reveal-on-scroll.revealed {
+  .cta-shimmer::after {
+    display: none !important;
+  }
+
+  .reveal-animated {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
   }
 }
+

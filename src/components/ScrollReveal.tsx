@@ -6,63 +6,64 @@ interface ScrollRevealProps {
   children: React.ReactNode;
   className?: string;
   delayMs?: number;
-  as?: React.ElementType;
 }
 
 export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   children,
   className = '',
   delayMs = 0,
-  as: Component = 'div',
 }) => {
-  const [isRevealed, setIsRevealed] = useState(false);
-  const elementRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const domRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // If reduced motion is requested, CSS overrides reveal-on-scroll to fully visible immediately
+    // If user prefers reduced motion, CSS media query handles visibility
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
-    // Flag document as ready for scroll animations
-    document.documentElement.classList.add('js-ready');
+    const element = domRef.current;
+    if (!element) return;
 
+    // Trigger reveal when element is 60px inside the viewport
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setIsRevealed(true);
-            if (elementRef.current) {
-              observer.unobserve(elementRef.current);
-            }
+            setIsVisible(true);
+            observer.unobserve(entry.target);
           }
         });
       },
       {
-        threshold: 0.1,
-        rootMargin: '0px 0px -40px 0px',
+        threshold: 0.12,
+        rootMargin: '0px 0px -50px 0px',
       }
     );
 
-    const currentElem = elementRef.current;
-    if (currentElem) {
-      observer.observe(currentElem);
-    }
+    observer.observe(element);
 
     return () => {
-      if (currentElem) {
-        observer.unobserve(currentElem);
-      }
+      observer.disconnect();
     };
   }, []);
 
   return (
-    <Component
-      ref={elementRef}
-      style={delayMs && isRevealed ? { transitionDelay: `${delayMs}ms` } : undefined}
-      className={`reveal-on-scroll ${isRevealed ? 'revealed' : ''} ${className}`}
+    <div
+      ref={domRef}
+      style={{
+        transitionDelay: isVisible ? `${delayMs}ms` : '0ms',
+        transitionDuration: '700ms',
+        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      }}
+      className={`reveal-animated transition-all duration-700 ease-out will-change-[transform,opacity] ${
+        isVisible
+          ? 'opacity-100 translate-y-0 scale-100'
+          : 'opacity-0 translate-y-12 scale-[0.98]'
+      } ${className}`}
     >
       {children}
-    </Component>
+    </div>
   );
+
 };

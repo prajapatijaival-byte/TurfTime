@@ -73,9 +73,10 @@ export const VenueModal: React.FC<VenueModalProps> = ({
       aria-labelledby="modal-venue-title"
     >
       <div
-        className="relative w-full max-w-3xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden my-8 cursor-default animate-modal-in"
+        className="relative w-full max-w-3xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden my-8 cursor-default animate-modal-pop"
         onClick={(e) => e.stopPropagation()}
       >
+
 
         {/* Header Image with Badges */}
         <div className="relative h-64 sm:h-72 w-full bg-[#131B22]">
@@ -221,11 +222,12 @@ export const VenueModal: React.FC<VenueModalProps> = ({
                 <span>Estimated Total (Illustrative)</span>
                 <span
                   key={`${venue.id}-${selectedDuration}`}
-                  className="text-[#B7FF3C] text-base font-black animate-price-pulse inline-block"
+                  className="text-[#B7FF3C] text-base font-black animate-price-pop inline-block"
                 >
                   ₹{estimatedTotal.toLocaleString('en-IN')}
                 </span>
               </div>
+
             </div>
           </div>
 

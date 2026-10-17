@@ -36,7 +36,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.08] animate-hero-fade animate-hero-delay-1">
+            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.08] animate-hero-rise hero-delay-1">
               Your Game.{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B7FF3C] via-[#CEFF66] to-[#88CA16]">
                 Your Turf.
@@ -45,30 +45,30 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-base sm:text-lg text-neutral-400 max-w-2xl leading-relaxed font-normal animate-hero-fade animate-hero-delay-2">
+            <p className="text-base sm:text-lg text-neutral-400 max-w-2xl leading-relaxed font-normal animate-hero-rise hero-delay-2">
               Experience modern sports venue discovery. Browse FIFA-grade floodlit synthetic turf
               arenas across Mumbai localities, calculate slot estimates in real time, and submit
               seamless booking inquiries for your squad.
             </p>
 
             {/* CTAs */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 animate-hero-fade animate-hero-delay-3">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 animate-hero-rise hero-delay-3">
               <button
                 type="button"
                 id="hero-explore-cta"
                 onClick={onExploreClick}
-                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] hover:shadow-[0_4px_24px_rgba(183,255,60,0.3)] active:scale-[0.98] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] group"
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.97] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] group animate-cta-pulse cta-shimmer shadow-lg shadow-[#B7FF3C]/30"
               >
-                <Compass className="w-4 h-4 stroke-[2.5] group-hover:rotate-45 transition-transform duration-300" />
-                Explore Turfs
-                <ArrowRight className="w-4 h-4 stroke-[2.5] group-hover:translate-x-1 transition-transform duration-200" />
+                <Compass className="w-4 h-4 stroke-[2.5] group-hover:rotate-45 transition-transform duration-300 relative z-10" />
+                <span className="relative z-10">Explore Turfs</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5] group-hover:translate-x-1.5 transition-transform duration-200 relative z-10" />
               </button>
 
               <button
                 type="button"
                 id="hero-how-it-works-cta"
                 onClick={onHowItWorksClick}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-neutral-200 bg-[#131B22] border border-[#23303B] hover:border-neutral-500 hover:text-white hover:bg-[#18222B] active:scale-[0.98] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-neutral-200 bg-[#131B22] border border-[#23303B] hover:border-[#B7FF3C]/50 hover:text-white hover:bg-[#18222B] active:scale-[0.97] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
               >
                 <Clock className="w-4 h-4 text-neutral-400" />
                 How It Works
@@ -76,7 +76,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
             </div>
 
             {/* Quick Micro-Highlights */}
-            <div className="pt-4 border-t border-[#23303B]/80 grid grid-cols-3 gap-4 max-w-lg animate-hero-fade animate-hero-delay-4">
+            <div className="pt-4 border-t border-[#23303B]/80 grid grid-cols-3 gap-4 max-w-lg animate-hero-rise hero-delay-4">
               <div className="space-y-0.5">
                 <p className="text-xs text-neutral-400">Locations</p>
                 <p className="text-sm font-bold text-white flex items-center gap-1">
@@ -96,7 +96,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
           </div>
 
           {/* Right Column: Hero Visual Showcase */}
-          <div className="lg:col-span-5 relative animate-hero-fade animate-hero-delay-2">
+          <div className="lg:col-span-5 relative animate-hero-rise hero-delay-2">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               {/* Decorative Frame */}
               <div className="relative rounded-2xl overflow-hidden border border-[#23303B] hover:border-[#B7FF3C]/40 bg-[#131B22] shadow-2xl shadow-black/80 group transition-all duration-300">
@@ -107,10 +107,11 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
                     fill
                     priority
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="object-cover animate-hero-kenburns group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090D10] via-transparent to-transparent opacity-80" />
                 </div>
+
 
                 {/* Floating Info Overlay Inside Card */}
                 <div className="p-5 space-y-3 bg-[#0E1419]/95 backdrop-blur-md border-t border-[#23303B]">

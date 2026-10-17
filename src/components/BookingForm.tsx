@@ -307,12 +307,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         )}
 
         {/* Main Form Layout (2 Columns on large screens) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
-          {/* Left Column: Form Fields */}
-          <div className="lg:col-span-7 bg-[#0E1419] border border-[#23303B] rounded-2xl p-6 sm:p-8 shadow-xl">
-            <form onSubmit={handleSubmit} noValidate className="space-y-6">
-              {/* Customer Full Name */}
-              <div className="space-y-1.5">
+        <ScrollReveal delayMs={100}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
+            {/* Left Column: Form Fields */}
+            <div className="lg:col-span-7 bg-[#0E1419] border border-[#23303B] rounded-2xl p-6 sm:p-8 shadow-xl">
+              <form onSubmit={handleSubmit} noValidate className="space-y-6">
+                {/* Customer Full Name */}
+                <div className="space-y-1.5">
                 <label
                   htmlFor="field-fullName"
                   className="block text-xs font-semibold uppercase tracking-wider text-neutral-300"
@@ -633,7 +634,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   <div className="text-right">
                     <span
                       key={`${formData.venueId}-${formData.duration}`}
-                      className="text-2xl sm:text-3xl font-black text-[#B7FF3C] animate-price-pulse inline-block"
+                      className="text-2xl sm:text-3xl font-black text-[#B7FF3C] animate-price-pop inline-block"
                     >
                       ₹{estimatedTotal.toLocaleString('en-IN')}
                     </span>
@@ -659,7 +660,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
+    </div>
 
       {/* Phase 2 Database Submission Success Modal */}
       {confirmedBooking && (
@@ -671,9 +673,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
           aria-labelledby="confirmed-modal-title"
         >
           <div
-            className="relative w-full max-w-xl bg-[#0E1419] border border-[#B7FF3C]/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default animate-modal-in"
+            className="relative w-full max-w-xl bg-[#0E1419] border border-[#B7FF3C]/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default animate-modal-pop"
             onClick={(e) => e.stopPropagation()}
           >
+
 
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#23303B]">

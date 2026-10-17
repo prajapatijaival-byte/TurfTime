@@ -17,7 +17,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
   onBookNow,
 }) => {
   return (
-    <article className="group bg-[#0E1419] border border-[#23303B] hover:border-[#B7FF3C]/60 rounded-2xl overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(183,255,60,0.08)] flex flex-col h-full">
+    <article className="group bg-[#0E1419] border border-[#23303B] hover:border-[#B7FF3C] rounded-2xl overflow-hidden transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_16px_36px_rgba(183,255,60,0.12),0_4px_12px_rgba(0,0,0,0.6)] flex flex-col h-full">
       {/* Image Container with Badges */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#131B22]">
         <Image
@@ -25,7 +25,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
           alt={`Floodlit artificial sports turf at ${venue.name}, ${venue.locality}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0E1419] via-transparent to-transparent opacity-80" />
 
