@@ -153,12 +153,20 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Supabase insert failed with code:', error.code, error.message);
+      const isMissingTable =
+        error.code === 'PGRST205' ||
+        error.message?.includes('Could not find the table') ||
+        error.message?.includes('does not exist');
+
       return NextResponse.json(
         {
           success: false,
-          error: `Database insertion error: ${error.message}`,
+          error: isMissingTable
+            ? "Database table 'booking_requests' does not exist yet. Please run the SQL migration script in your Supabase SQL Editor to initialize the table and RLS policies."
+            : `Database insertion error: ${error.message}`,
+          missingTable: isMissingTable,
         },
-        { status: 500 }
+        { status: isMissingTable ? 503 : 500 }
       );
     }
 
