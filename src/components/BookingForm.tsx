@@ -15,11 +15,24 @@ import {
   CheckCircle2,
   X,
   AlertCircle,
+  Loader2,
+  Database,
 } from 'lucide-react';
 
 interface BookingFormProps {
   preselectedVenueId: string;
   preselectedDuration?: number;
+}
+
+export interface SavedBookingConfirmation {
+  id: string;
+  createdAt: string;
+  status: string;
+  venueName: string;
+  bookingDate: string;
+  startTime: string;
+  durationHours: number;
+  estimatedPrice: number;
 }
 
 const CURRENT_DEMO_DATE = '2026-10-18';
@@ -55,25 +68,21 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [acknowledgedNotice, setAcknowledgedNotice] = useState<boolean>(false);
-  const [submissionPreview, setSubmissionPreview] = useState<{
-    payload: BookingFormData;
-    calculatedTotal: number;
-    venueName: string;
-    venueLocality: string;
-  } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [apiError, setApiError] = useState<{ message: string; requiresConfig?: boolean } | null>(null);
+  const [confirmedBooking, setConfirmedBooking] = useState<SavedBookingConfirmation | null>(null);
 
-  // Close preview modal on Escape key
+  // Close confirmation modal on Escape key
   useEffect(() => {
-    if (!submissionPreview) return;
+    if (!confirmedBooking) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setSubmissionPreview(null);
+        setConfirmedBooking(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [submissionPreview]);
+  }, [confirmedBooking]);
 
   // Find currently selected venue
   const selectedVenue =
@@ -146,7 +155,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Mark all fields as touched
@@ -162,24 +171,65 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
     const validationErrors = validate(formData);
     setErrors(validationErrors);
+    setApiError(null);
 
-    if (Object.keys(validationErrors).length === 0) {
-      // Inputs are valid!
-      // In Phase 1: show client preview modal explaining Phase 2 readiness
-      setSubmissionPreview({
-        payload: { ...formData },
-        calculatedTotal: estimatedTotal,
-        venueName: selectedVenue.name,
-        venueLocality: selectedVenue.locality,
-      });
-    } else {
+    if (Object.keys(validationErrors).length > 0) {
       // Focus first error element
       const firstErrorKey = Object.keys(validationErrors)[0];
       const element = document.getElementById(`field-${firstErrorKey}`);
       if (element) {
         element.focus();
       }
+      return;
     }
+
+    try {
+      setIsSubmitting(true);
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 201 && data.success) {
+        setConfirmedBooking(data.booking);
+        setApiError(null);
+      } else if (res.status === 400 && data.validationErrors) {
+        setErrors(data.validationErrors);
+        setApiError({ message: data.error || 'Server validation failed on one or more fields.' });
+      } else {
+        setApiError({
+          message: data.error || 'Failed to submit booking request.',
+          requiresConfig: Boolean(data.requiresConfiguration),
+        });
+      }
+    } catch {
+      setApiError({
+        message: 'Network error: Unable to reach the booking API. Please ensure the server is running.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResetForm = () => {
+    setConfirmedBooking(null);
+    setFormData({
+      fullName: '',
+      email: '',
+      phone: '',
+      venueId: SAMPLE_VENUES[0].id,
+      date: CURRENT_DEMO_DATE,
+      timeSlot: DEMO_TIME_SLOTS[4],
+      duration: 1,
+      notes: '',
+    });
+    setTouched({});
+    setErrors({});
   };
 
   return (
@@ -188,58 +238,60 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#B7FF3C]">
-            Interactive Request Form
+            Phase 2 Database Connected
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Request a Turf Slot
           </h2>
           <p className="text-sm sm:text-base text-neutral-400">
-            Select your preferred Mumbai venue, configure date and duration, and preview dynamic
-            pricing in real time.
+            Select your preferred Mumbai venue, configure date and duration, and submit an authoritative
+            inquiry directly to the database.
           </p>
         </div>
 
-        {/* Phase 1 Constraint Notification Card */}
+        {/* Phase 2 Integration Notification Card */}
         <div className="mb-10 p-4 sm:p-5 rounded-2xl bg-[#0E1419] border border-[#23303B] max-w-4xl mx-auto flex items-start gap-3.5">
           <div className="p-2 rounded-lg bg-[#131B22] border border-[#23303B] text-[#B7FF3C] shrink-0 mt-0.5">
-            <ShieldAlert className="w-4 h-4" />
+            <Database className="w-4 h-4" />
           </div>
           <div className="space-y-1">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Phase 1 Frontend Demonstration Notice
+              Phase 2 Supabase PostgreSQL Integration
             </h4>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              This form executes full client-side validation, live pricing calculation, and state
-              management. Submitting this form tests frontend reliability and prepares the structured
-              payload. It does <strong className="text-neutral-200">not</strong> record entries to a
-              live database or confirm reservations until Phase 2 backend (Supabase + Route Handlers) is connected.
+              Submissions are validated by the server-side Route Handler (<code className="text-[#B7FF3C]">/api/bookings</code>),
+              which calculates trusted pricing and records the request into Supabase PostgreSQL in a{' '}
+              <strong className="text-neutral-200">Pending</strong> status. Submitting an inquiry does{' '}
+              <strong className="text-neutral-200">not</strong> guarantee an immediate reservation until confirmed by venue staff.
             </p>
           </div>
         </div>
 
-        {/* Demo Request Validated Banner */}
-        {acknowledgedNotice && (
-          <div className="mb-8 p-4.5 rounded-2xl bg-[#0E1419] border border-[#B7FF3C]/40 max-w-4xl mx-auto flex items-start justify-between gap-3 text-xs animate-in fade-in duration-300">
+        {/* API Error Notification Banner */}
+        {apiError && (
+          <div className="mb-8 p-4.5 rounded-2xl bg-rose-950/40 border border-rose-500/50 max-w-4xl mx-auto flex items-start justify-between gap-3 text-xs animate-in fade-in duration-300">
             <div className="flex items-start gap-3">
-              <div className="p-1.5 rounded-lg bg-[#131B22] border border-[#B7FF3C]/30 text-[#B7FF3C] shrink-0 mt-0.5">
-                <CheckCircle2 className="w-4 h-4" />
+              <div className="p-1.5 rounded-lg bg-rose-900/50 border border-rose-500/40 text-rose-400 shrink-0 mt-0.5">
+                <AlertCircle className="w-4 h-4" />
               </div>
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 <h4 className="font-bold text-white text-sm">
-                  Phase 1 Demo Request Validated Successfully
+                  {apiError.requiresConfig ? 'Supabase Configuration Required' : 'Submission Unsuccessful'}
                 </h4>
-                <p className="text-neutral-300 leading-relaxed">
-                  Your booking request parameters have been structured and verified on the client.
-                  No charge was processed and no database record was written. In Phase 2, this request
-                  will connect to Supabase PostgreSQL and dispatch an email confirmation.
-                </p>
+                <p className="text-rose-200 leading-relaxed">{apiError.message}</p>
+                {apiError.requiresConfig && (
+                  <p className="text-[11px] text-neutral-400 mt-1">
+                    Setup steps: Run the SQL migration in your Supabase SQL Editor and add your Project URL and
+                    Anon Key to <code className="text-[#B7FF3C]">.env.local</code>.
+                  </p>
+                )}
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setAcknowledgedNotice(false)}
-              className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-[#131B22] transition-colors"
-              aria-label="Dismiss validated demo notification"
+              onClick={() => setApiError(null)}
+              className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+              aria-label="Dismiss error message"
             >
               <X className="w-4 h-4" />
             </button>
@@ -498,10 +550,20 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <button
                   type="submit"
                   id="submit-booking-request-btn"
-                  className="w-full py-3.5 px-6 rounded-xl font-bold text-sm uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.99] transition-all duration-200 shadow-lg shadow-[#B7FF3C]/20 cursor-pointer flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 px-6 rounded-xl font-bold text-sm uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.99] transition-all duration-200 shadow-lg shadow-[#B7FF3C]/20 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Zap className="w-4 h-4 stroke-[2.5]" />
-                  Validate & Preview Booking Request (Phase 1)
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving Request to Database...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 stroke-[2.5]" />
+                      Submit Booking Request
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -549,7 +611,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 </div>
                 <div className="flex justify-between text-neutral-300">
                   <span>Booking Platform Fee</span>
-                  <span className="text-[#B7FF3C] font-semibold">₹0 (Phase 1)</span>
+                  <span className="text-[#B7FF3C] font-semibold">₹0 (Included)</span>
                 </div>
 
                 {/* Total */}
@@ -558,7 +620,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     <span className="text-xs uppercase tracking-wider font-bold text-neutral-300 block">
                       Estimated Total
                     </span>
-                    <span className="text-[10px] text-neutral-400">(Illustrative Demo Rate)</span>
+                    <span className="text-[10px] text-neutral-400">(Server-verified rate)</span>
                   </div>
                   <div className="text-right">
                     <span className="text-2xl sm:text-3xl font-black text-[#B7FF3C]">
@@ -576,11 +638,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#B7FF3C]" />
-                  <span>Client-side input schema validation</span>
+                  <span>Server-side schema & rate validation</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#B7FF3C]" />
-                  <span>Form pre-selects venue from cards</span>
+                  <span>Direct Supabase PostgreSQL persistence</span>
                 </div>
               </div>
             </div>
@@ -588,93 +650,86 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         </div>
       </div>
 
-      {/* Phase 1 Validation & Payload Preview Modal */}
-      {submissionPreview && (
+      {/* Phase 2 Database Submission Success Modal */}
+      {confirmedBooking && (
         <div
-          onClick={() => setSubmissionPreview(null)}
+          onClick={() => setConfirmedBooking(null)}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="preview-modal-title"
+          aria-labelledby="confirmed-modal-title"
         >
           <div
-            className="relative w-full max-w-xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default"
+            className="relative w-full max-w-xl bg-[#0E1419] border border-[#B7FF3C]/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#23303B]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#131B22] border border-[#B7FF3C]/50 flex items-center justify-center text-[#B7FF3C]">
-                  <CheckCircle2 className="w-5 h-5" />
+                <div className="w-11 h-11 rounded-xl bg-[#131B22] border border-[#B7FF3C] flex items-center justify-center text-[#B7FF3C] shadow-md shadow-[#B7FF3C]/20">
+                  <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 id="preview-modal-title" className="text-lg font-black text-white">
-                    Client Validation Passed
-                  </h3>
-                  <p className="text-xs text-neutral-400">Phase 1 Frontend Request Payload Ready</p>
+                  <div className="flex items-center gap-2">
+                    <h3 id="confirmed-modal-title" className="text-lg font-black text-white">
+                      Booking Request Recorded
+                    </h3>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      Pending Review
+                    </span>
+                  </div>
+                  <p className="text-xs text-neutral-400">Successfully inserted into Supabase PostgreSQL</p>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => setSubmissionPreview(null)}
+                onClick={() => setConfirmedBooking(null)}
                 className="p-1.5 rounded-lg text-neutral-400 hover:text-white bg-[#131B22] border border-[#23303B]"
-                aria-label="Close preview modal"
+                aria-label="Close confirmation dialog"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Assessment Limitation Explanation */}
+            {/* Crucial Disclosure Note */}
             <div className="p-4 rounded-xl bg-[#131B22] border border-[#23303B] text-xs text-neutral-300 space-y-2">
               <p className="font-bold text-[#B7FF3C] flex items-center gap-1.5">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
-                Assessment Constraint Verification:
+                Reservation Status Notice:
               </p>
-              <p className="text-neutral-400 leading-relaxed">
-                As required for Phase 1, no fake successful server response is generated and no records
-                have been written to a database. The form has verified all inputs, computed dynamic costs,
-                and assembled the payload below for future Route Handler integration.
+              <p className="text-neutral-300 leading-relaxed">
+                Your request has been securely recorded with status <strong className="text-amber-300">Pending</strong>.
+                This is a booking request inquiry and <strong className="text-white">does not guarantee a confirmed reservation</strong> until
+                venue coordinators verify live slot availability and reach out to you directly.
               </p>
             </div>
 
-            {/* Assembled Request Details */}
-            <div className="bg-[#090D10] border border-[#23303B] rounded-xl p-4 space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-[#23303B]/60">
-                <span className="text-neutral-400">Organizer:</span>
-                <span className="font-semibold text-white">{submissionPreview.payload.fullName}</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-[#23303B]/60">
-                <span className="text-neutral-400">Contact:</span>
-                <span className="font-semibold text-white">
-                  {submissionPreview.payload.email} • {submissionPreview.payload.phone}
-                </span>
+            {/* Assembled Database Record Details */}
+            <div className="bg-[#090D10] border border-[#23303B] rounded-xl p-4 space-y-2.5 text-xs">
+              <div className="flex items-center justify-between py-1 border-b border-[#23303B]/60">
+                <span className="text-neutral-400">Database Reference ID:</span>
+                <code className="font-mono text-[11px] text-[#B7FF3C] bg-[#131B22] px-2 py-0.5 rounded border border-[#23303B]">
+                  {confirmedBooking.id}
+                </code>
               </div>
               <div className="flex justify-between py-1 border-b border-[#23303B]/60">
                 <span className="text-neutral-400">Venue:</span>
-                <span className="font-semibold text-white">
-                  {submissionPreview.venueName} ({submissionPreview.venueLocality})
-                </span>
+                <span className="font-semibold text-white">{confirmedBooking.venueName}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#23303B]/60">
-                <span className="text-neutral-400">Schedule:</span>
-                <span className="font-semibold text-white">
-                  {submissionPreview.payload.date} ({submissionPreview.payload.duration} hrs)
-                </span>
+                <span className="text-neutral-400">Booking Date:</span>
+                <span className="font-semibold text-white">{confirmedBooking.bookingDate}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#23303B]/60">
-                <span className="text-neutral-400">Time Slot:</span>
-                <span className="font-semibold text-[#B7FF3C]">{submissionPreview.payload.timeSlot}</span>
+                <span className="text-neutral-400">Time Slot & Duration:</span>
+                <span className="font-semibold text-white">
+                  {confirmedBooking.startTime} ({confirmedBooking.durationHours} hrs)
+                </span>
               </div>
-              {submissionPreview.payload.notes && (
-                <div className="py-1 border-b border-[#23303B]/60">
-                  <span className="text-neutral-400 block mb-0.5">Notes:</span>
-                  <span className="font-normal text-neutral-300 italic">{submissionPreview.payload.notes}</span>
-                </div>
-              )}
               <div className="flex justify-between pt-2 text-sm font-bold">
-                <span className="text-white">Estimated Total:</span>
-                <span className="text-[#B7FF3C]">
-                  ₹{submissionPreview.calculatedTotal.toLocaleString('en-IN')}
+                <span className="text-white">Authoritative Estimated Total:</span>
+                <span className="text-[#B7FF3C] text-base">
+                  ₹{confirmedBooking.estimatedPrice.toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
@@ -683,20 +738,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => setSubmissionPreview(null)}
-                className="px-5 py-2.5 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white bg-[#131B22] border border-[#23303B] hover:border-neutral-500 transition-colors"
+                onClick={handleResetForm}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] transition-colors shadow-md shadow-[#B7FF3C]/20 cursor-pointer"
               >
-                Modify Request
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSubmissionPreview(null);
-                  setAcknowledgedNotice(true);
-                }}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] transition-colors"
-              >
-                Acknowledge Preview
+                Done / Book Another Turf
               </button>
             </div>
           </div>

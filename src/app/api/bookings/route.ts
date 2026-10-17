@@ -1,23 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { SAMPLE_VENUES } from '@/data/venues';
+import { getSupabaseServerClient, isSupabaseConfigured } from '@/lib/supabaseServer';
 
 /**
  * Route Handler: /api/bookings
  * 
- * Phase 1 Architecture Contract:
- * Prepares the Next.js App Router API boundary for Phase 2 Supabase integration.
- * In Phase 2, this handler will authenticate requests, check slot conflicts in Supabase,
- * and create an immutable booking record in PostgreSQL.
+ * Phase 2 Supabase PostgreSQL Integration:
+ * - Validates all parameters on the server side (name, email, 10-digit phone, date, slot, duration).
+ * - Enforces server-side price calculation using authoritative venue data; client-submitted rates are ignored.
+ * - Inserts validated requests into Supabase PostgreSQL under least-privilege RLS.
+ * - Returns clean HTTP status codes and safe error messages without exposing PII in logs.
  */
 
 export async function GET() {
+  const configured = isSupabaseConfigured();
   return NextResponse.json({
-    status: 'Phase 1 Frontend Prototype',
-    message: 'TurfTime API is structured for Phase 2 Supabase integration.',
-    endpoints: {
-      venues: 'Available via static dataset in Phase 1; planned Supabase query in Phase 2.',
-      bookings: 'POST /api/bookings will handle slot creation and Supabase persistence in Phase 2.',
+    service: 'TurfTime Booking API',
+    phase: 2,
+    database: {
+      provider: 'Supabase PostgreSQL',
+      configured,
+      status: configured
+        ? 'Connected / Ready for transactions'
+        : 'Awaiting Supabase project URL & Key in .env.local',
     },
-    version: '1.0.0-phase1',
+    schema: 'booking_requests',
   });
 }
 
@@ -25,43 +32,162 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Basic structure validation for Phase 2 readiness
-    const { fullName, email, phone, venueId, date, timeSlot, duration } = body;
+    // 1. Extract inputs
+    const fullName = typeof body.fullName === 'string' ? body.fullName.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const phone = typeof body.phone === 'string' ? body.phone.replace(/[\s\-\+]/g, '') : '';
+    const venueId = typeof body.venueId === 'string' ? body.venueId.trim() : '';
+    const date = typeof body.date === 'string' ? body.date.trim() : '';
+    const timeSlot = typeof body.timeSlot === 'string' ? body.timeSlot.trim() : '';
+    const duration = typeof body.duration === 'number' ? body.duration : Number(body.duration);
+    const notes = typeof body.notes === 'string' ? body.notes.trim() : '';
 
-    if (!fullName || !email || !phone || !venueId || !date || !timeSlot || !duration) {
+    // 2. Strict Server-Side Validation
+    const validationErrors: Record<string, string> = {};
+
+    if (!fullName || fullName.length < 2 || fullName.length > 100) {
+      validationErrors.fullName = 'Full name is required (2–100 characters).';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!email || !emailRegex.test(email) || email.length > 255) {
+      validationErrors.email = 'A valid email address is required (e.g., user@example.com).';
+    }
+
+    const cleanPhone = phone.slice(-10);
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+      validationErrors.phone = 'A valid 10-digit Indian mobile number is required (starting with 6-9).';
+    }
+
+    // Authoritative venue lookup
+    const matchedVenue = SAMPLE_VENUES.find((v) => v.id === venueId);
+    if (!matchedVenue) {
+      validationErrors.venueId = 'Invalid sports venue selected.';
+    }
+
+    // Date validation
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!date || !dateRegex.test(date)) {
+      validationErrors.date = 'Date must be formatted as YYYY-MM-DD.';
+    } else {
+      const todayIso = new Date().toISOString().split('T')[0];
+      if (date < todayIso) {
+        validationErrors.date = 'Booking date cannot be in the past.';
+      }
+    }
+
+    if (!timeSlot || timeSlot.length < 3 || timeSlot.length > 60) {
+      validationErrors.timeSlot = 'A valid time slot window must be selected.';
+    }
+
+    if (isNaN(duration) || duration <= 0 || duration > 12) {
+      validationErrors.duration = 'Booking duration must be between 1 and 12 hours.';
+    } else if (matchedVenue && !matchedVenue.availableDurations.includes(duration)) {
+      validationErrors.duration = `Duration ${duration}h is not supported for ${matchedVenue.name}. Supported durations: ${matchedVenue.availableDurations.join(', ')}h.`;
+    }
+
+    if (notes && notes.length > 500) {
+      validationErrors.notes = 'Optional notes cannot exceed 500 characters.';
+    }
+
+    // Return 400 if any validations failed
+    if (Object.keys(validationErrors).length > 0) {
       return NextResponse.json(
         {
-          error: 'Missing required booking request parameters.',
-          received: { fullName, email, phone, venueId, date, timeSlot, duration },
+          success: false,
+          error: 'Validation failed on one or more booking request fields.',
+          validationErrors,
         },
         { status: 400 }
       );
     }
 
-    // Phase 1 constraint: Explicitly return Phase 1 status without faking DB persistence
+    // 3. Authoritative Server-Side Calculation (Never trust client-submitted prices)
+    const authoritativeVenue = matchedVenue!;
+    const trustedEstimatedPrice = Math.round(authoritativeVenue.hourlyRate * duration);
+    const trustedVenueName = authoritativeVenue.name;
+
+    // 4. Check Supabase Connectivity
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'Database credentials are not yet configured. Please add your Supabase Project URL and Anon/Service Key to .env.local to enable live database persistence.',
+          requiresConfiguration: true,
+        },
+        { status: 503 }
+      );
+    }
+
+    const supabase = getSupabaseServerClient();
+    if (!supabase) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Failed to initialize Supabase server client.',
+        },
+        { status: 500 }
+      );
+    }
+
+    // 5. Insert Record into Supabase PostgreSQL
+    const { data, error } = await supabase
+      .from('booking_requests')
+      .insert({
+        customer_name: fullName,
+        email,
+        phone: cleanPhone,
+        venue_id: authoritativeVenue.id,
+        venue_name: trustedVenueName,
+        booking_date: date,
+        start_time: timeSlot,
+        duration_hours: duration,
+        estimated_price: trustedEstimatedPrice,
+        notes: notes || null,
+        status: 'pending',
+      })
+      .select('id, created_at, status, venue_name, booking_date, start_time, duration_hours, estimated_price')
+      .single();
+
+    if (error) {
+      console.error('Supabase insert failed with code:', error.code, error.message);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Database insertion error: ${error.message}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    // 6. Return 201 Created on Successful Insert
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Your booking inquiry has been recorded and is currently pending review.',
+        booking: {
+          id: data.id,
+          createdAt: data.created_at,
+          status: data.status,
+          venueName: data.venue_name,
+          bookingDate: data.booking_date,
+          startTime: data.start_time,
+          durationHours: data.duration_hours,
+          estimatedPrice: data.estimated_price,
+        },
+      },
+      { status: 201 }
+    );
+  } catch {
+    console.error('API /api/bookings unexpected error');
     return NextResponse.json(
       {
         success: false,
-        phase: 1,
-        status: 'api_contract_verified',
-        message:
-          'Phase 1 API Contract Verified. Full persistent database storage and slot locking will be implemented in Phase 2 using Supabase PostgreSQL.',
-        payloadPreview: {
-          fullName,
-          email,
-          phone,
-          venueId,
-          date,
-          timeSlot,
-          duration,
-        },
+        error: 'An unexpected server error occurred while processing the booking request.',
       },
-      { status: 501 } // 501 Not Implemented (Honest HTTP semantics for Phase 1 prototype)
-    );
-  } catch {
-    return NextResponse.json(
-      { error: 'Invalid JSON request payload.' },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }
