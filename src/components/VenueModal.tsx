@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, CheckCircle2, Clock, Users, Maximize2, ShieldAlert, ArrowRight, Zap } from 'lucide-react';
 import { Venue } from '@/types';
@@ -17,6 +17,24 @@ export const VenueModal: React.FC<VenueModalProps> = ({
   onSelectForBooking,
 }) => {
   const [selectedDuration, setSelectedDuration] = useState<number>(venue?.availableDurations[0] || 1);
+  const [prevVenueId, setPrevVenueId] = useState<string | undefined>(venue?.id);
+
+  if (venue && venue.id !== prevVenueId) {
+    setPrevVenueId(venue.id);
+    setSelectedDuration(venue.availableDurations[0] || 1);
+  }
+
+  // Keyboard navigation: Escape key closes modal
+  useEffect(() => {
+    if (!venue) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [venue, onClose]);
 
   if (!venue) return null;
 
@@ -29,13 +47,14 @@ export const VenueModal: React.FC<VenueModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200"
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200 cursor-pointer"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-venue-title"
     >
       <div
-        className="relative w-full max-w-3xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden my-8"
+        className="relative w-full max-w-3xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden my-8 cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Image with Badges */}

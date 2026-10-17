@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SAMPLE_VENUES, DEMO_TIME_SLOTS } from '@/data/venues';
 import { BookingFormData, FormErrors } from '@/types';
 import {
@@ -55,12 +55,25 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [acknowledgedNotice, setAcknowledgedNotice] = useState<boolean>(false);
   const [submissionPreview, setSubmissionPreview] = useState<{
     payload: BookingFormData;
     calculatedTotal: number;
     venueName: string;
     venueLocality: string;
   } | null>(null);
+
+  // Close preview modal on Escape key
+  useEffect(() => {
+    if (!submissionPreview) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSubmissionPreview(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [submissionPreview]);
 
   // Find currently selected venue
   const selectedVenue =
@@ -203,6 +216,35 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             </p>
           </div>
         </div>
+
+        {/* Demo Request Validated Banner */}
+        {acknowledgedNotice && (
+          <div className="mb-8 p-4.5 rounded-2xl bg-[#0E1419] border border-[#B7FF3C]/40 max-w-4xl mx-auto flex items-start justify-between gap-3 text-xs animate-in fade-in duration-300">
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-[#131B22] border border-[#B7FF3C]/30 text-[#B7FF3C] shrink-0 mt-0.5">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <div className="space-y-0.5">
+                <h4 className="font-bold text-white text-sm">
+                  Phase 1 Demo Request Validated Successfully
+                </h4>
+                <p className="text-neutral-300 leading-relaxed">
+                  Your booking request parameters have been structured and verified on the client.
+                  No charge was processed and no database record was written. In Phase 2, this request
+                  will connect to Supabase PostgreSQL and dispatch an email confirmation.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAcknowledgedNotice(false)}
+              className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-[#131B22] transition-colors"
+              aria-label="Dismiss validated demo notification"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Main Form Layout (2 Columns on large screens) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
@@ -549,12 +591,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       {/* Phase 1 Validation & Payload Preview Modal */}
       {submissionPreview && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setSubmissionPreview(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
           role="dialog"
           aria-modal="true"
           aria-labelledby="preview-modal-title"
         >
-          <div className="relative w-full max-w-xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6">
+          <div
+            className="relative w-full max-w-xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#23303B]">
               <div className="flex items-center gap-3">
@@ -646,9 +692,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 type="button"
                 onClick={() => {
                   setSubmissionPreview(null);
-                  alert(
-                    'Phase 1 Test Acknowledged: Request payload verified on client. Phase 2 will persist this to Supabase.'
-                  );
+                  setAcknowledgedNotice(true);
                 }}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] transition-colors"
               >

@@ -155,7 +155,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
             <button
               key={sport}
               type="button"
-              onClick={() => onSportChange(sport)}
+              onClick={() => onSportChange(isActive ? 'All Sports' : sport)}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 isActive
                   ? 'bg-[#B7FF3C] text-[#090D10] font-bold shadow-sm shadow-[#B7FF3C]/30'
