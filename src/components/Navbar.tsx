@@ -83,15 +83,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-7" aria-label="Main Navigation">
+          <nav className="hidden md:flex items-center gap-5" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleLinkClick(e, link.href)}
-                className="text-sm font-medium text-neutral-300 hover:text-white transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] rounded px-1.5 py-1"
+                className="relative text-sm font-medium text-neutral-300 hover:text-white transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] rounded px-2.5 py-1.5 group"
               >
                 {link.label}
+                <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-[#B7FF3C] scale-x-0 group-hover:scale-x-100 transition-transform duration-200 ease-out origin-left rounded-full" />
               </a>
             ))}
           </nav>
@@ -102,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               onClick={handleBookCTA}
               type="button"
               id="nav-book-turf-btn"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.98] transition-all duration-200 shadow-md shadow-[#B7FF3C]/20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#090D10]"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] hover:shadow-[0_4px_20px_rgba(183,255,60,0.3)] active:scale-[0.97] transition-all duration-200 shadow-md shadow-[#B7FF3C]/20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#090D10]"
             >
               Book a Turf
             </button>
@@ -113,28 +114,47 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl bg-[#131B22] border border-[#23303B] text-neutral-300 hover:text-white hover:border-[#B7FF3C]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
+              className="p-2.5 rounded-xl bg-[#131B22] border border-[#23303B] text-neutral-300 hover:text-white hover:border-[#B7FF3C]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] transition-all duration-200"
               aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5" />}
+              <div className="relative w-5 h-5 flex items-center justify-center">
+                <span
+                  className={`absolute transition-all duration-200 transform ${
+                    mobileMenuOpen ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'
+                  }`}
+                >
+                  <Menu className="w-5 h-5" />
+                </span>
+                <span
+                  className={`absolute transition-all duration-200 transform ${
+                    mobileMenuOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'
+                  }`}
+                >
+                  <X className="w-5 h-5 text-white" />
+                </span>
+              </div>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0D141A] border-b border-[#23303B] px-4 pt-3 pb-6 space-y-3 transition-all animate-in fade-in slide-in-from-top-2 duration-200">
+      {/* Mobile Drawer Menu with smooth CSS height/opacity transition */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-out bg-[#0D141A] border-b border-[#23303B] ${
+          mobileMenuOpen ? 'max-h-96 opacity-100 py-4 px-4' : 'max-h-0 opacity-0 py-0 px-4 pointer-events-none'
+        }`}
+      >
+        <div className="space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-[#23303B]">
             <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
               Menu Navigation
             </span>
             <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#131B22] text-[#B7FF3C] border border-[#B7FF3C]/30">
-              Prototype Mode
+              Phase 2 Connected
             </span>
           </div>
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -150,13 +170,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
             <button
               onClick={handleBookCTA}
               type="button"
-              className="w-full py-3 rounded-xl font-bold text-sm tracking-wide uppercase bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] shadow-md shadow-[#B7FF3C]/20 transition-colors"
+              className="w-full py-3 rounded-xl font-bold text-sm tracking-wide uppercase bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.98] shadow-md shadow-[#B7FF3C]/20 transition-all duration-200"
             >
               Book a Turf Now
             </button>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 };
+

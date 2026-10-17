@@ -18,11 +18,29 @@ export const VenueModal: React.FC<VenueModalProps> = ({
 }) => {
   const [selectedDuration, setSelectedDuration] = useState<number>(venue?.availableDurations[0] || 1);
   const [prevVenueId, setPrevVenueId] = useState<string | undefined>(venue?.id);
+  const closeBtnRef = React.useRef<HTMLButtonElement>(null);
 
   if (venue && venue.id !== prevVenueId) {
     setPrevVenueId(venue.id);
     setSelectedDuration(venue.availableDurations[0] || 1);
   }
+
+  // Lock body scroll while modal is active & restore focus
+  useEffect(() => {
+    if (!venue) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    // Focus close button for accessible keyboard navigation
+    const timer = setTimeout(() => {
+      closeBtnRef.current?.focus();
+    }, 50);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      clearTimeout(timer);
+    };
+  }, [venue]);
 
   // Keyboard navigation: Escape key closes modal
   useEffect(() => {
@@ -40,6 +58,7 @@ export const VenueModal: React.FC<VenueModalProps> = ({
 
   const estimatedTotal = venue.hourlyRate * selectedDuration;
 
+
   const handleProceed = () => {
     onSelectForBooking(venue.id, selectedDuration);
     onClose();
@@ -48,15 +67,16 @@ export const VenueModal: React.FC<VenueModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200 cursor-pointer"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200 cursor-pointer"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-venue-title"
     >
       <div
-        className="relative w-full max-w-3xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden my-8 cursor-default"
+        className="relative w-full max-w-3xl bg-[#0E1419] border border-[#23303B] rounded-2xl shadow-2xl overflow-hidden my-8 cursor-default animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >
+
         {/* Header Image with Badges */}
         <div className="relative h-64 sm:h-72 w-full bg-[#131B22]">
           <Image
@@ -70,9 +90,10 @@ export const VenueModal: React.FC<VenueModalProps> = ({
 
           {/* Close button */}
           <button
+            ref={closeBtnRef}
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-xl bg-black/60 hover:bg-black/80 text-neutral-300 hover:text-white border border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-[#B7FF3C]"
+            className="absolute top-4 right-4 p-2 rounded-xl bg-black/60 hover:bg-black/80 text-neutral-300 hover:text-white border border-white/10 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#B7FF3C] cursor-pointer"
             aria-label="Close venue details dialog"
           >
             <X className="w-5 h-5" />
@@ -174,7 +195,7 @@ export const VenueModal: React.FC<VenueModalProps> = ({
                     key={duration}
                     type="button"
                     onClick={() => setSelectedDuration(duration)}
-                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer ${
                       selectedDuration === duration
                         ? 'bg-[#B7FF3C] text-[#090D10] shadow-md shadow-[#B7FF3C]/20'
                         : 'bg-[#0E1419] border border-[#23303B] text-neutral-300 hover:text-white hover:border-neutral-500'
@@ -196,12 +217,19 @@ export const VenueModal: React.FC<VenueModalProps> = ({
                 <span>Floodlight & Facility Access Surcharge</span>
                 <span className="text-[#B7FF3C]">₹0 (Included)</span>
               </div>
-              <div className="flex justify-between text-sm font-extrabold text-white pt-2 border-t border-[#23303B]">
+              <div className="flex justify-between text-sm font-extrabold text-white pt-2 border-t border-[#23303B] items-baseline">
                 <span>Estimated Total (Illustrative)</span>
-                <span className="text-[#B7FF3C] text-base">₹{estimatedTotal.toLocaleString('en-IN')}</span>
+                <span
+                  key={`${venue.id}-${selectedDuration}`}
+                  className="text-[#B7FF3C] text-base font-black animate-price-pulse inline-block"
+                >
+                  ₹{estimatedTotal.toLocaleString('en-IN')}
+                </span>
               </div>
             </div>
           </div>
+
+
 
           {/* Fictional demo notice */}
           <div className="flex items-start gap-2.5 p-3 rounded-lg bg-neutral-900/60 border border-neutral-800 text-[11px] text-neutral-400">

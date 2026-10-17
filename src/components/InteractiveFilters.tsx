@@ -37,14 +37,14 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
       {/* Top Filter Bar Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#23303B]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-[#131B22] border border-[#23303B] text-[#B7FF3C]">
+          <div className="p-2 rounded-lg bg-[#131B22] border border-[#23303B] text-[#B7FF3C] shadow-inner">
             <SlidersHorizontal className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-base font-bold text-white flex items-center gap-2">
               Filter Venues
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#131B22] border border-[#23303B] text-neutral-400">
-                Showing {filteredCount} of {totalCount}
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#131B22] border border-[#23303B] text-neutral-300 transition-all duration-200">
+                Showing <strong className="text-[#B7FF3C]">{filteredCount}</strong> of {totalCount}
               </span>
             </h3>
             <p className="text-xs text-neutral-400">
@@ -58,10 +58,10 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
           <button
             type="button"
             onClick={onResetFilters}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-300 bg-[#131B22] border border-[#23303B] hover:text-white hover:border-[#B7FF3C]/50 hover:bg-[#18222B] transition-all cursor-pointer self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-300 bg-[#131B22] border border-[#23303B] hover:text-white hover:border-[#B7FF3C]/50 hover:bg-[#18222B] active:scale-95 transition-all duration-200 cursor-pointer self-start sm:self-auto group"
             aria-label="Clear all applied filters"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-[#B7FF3C]" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#B7FF3C] group-hover:-rotate-90 transition-transform duration-300" />
             Reset Filters
           </button>
         )}
@@ -82,13 +82,13 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="e.g. Mahalaxmi, Worli, Rooftop, Football..."
-              className="w-full bg-[#131B22] border border-[#23303B] rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all"
+              className="w-full bg-[#131B22] border border-[#23303B] rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all duration-200"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white p-0.5 rounded"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white p-0.5 rounded transition-colors"
                 aria-label="Clear search input"
               >
                 <X className="w-3.5 h-3.5" />
@@ -106,7 +106,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
             id="sport-type-select"
             value={selectedSport}
             onChange={(e) => onSportChange(e.target.value)}
-            className="w-full bg-[#131B22] border border-[#23303B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all cursor-pointer"
+            className="w-full bg-[#131B22] border border-[#23303B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all duration-200 cursor-pointer"
           >
             {AVAILABLE_SPORTS.map((sport) => (
               <option key={sport} value={sport} className="bg-[#131B22] text-white">
@@ -122,7 +122,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
             <label htmlFor="price-range-slider" className="font-semibold uppercase tracking-wider text-neutral-400">
               Max Rate:
             </label>
-            <span className="font-bold text-[#B7FF3C] bg-[#131B22] px-2 py-0.5 rounded border border-[#23303B]">
+            <span className="font-bold text-[#B7FF3C] bg-[#131B22] px-2 py-0.5 rounded border border-[#23303B] transition-all duration-200">
               ₹{maxPrice.toLocaleString('en-IN')}/hr
             </span>
           </div>
@@ -135,7 +135,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
               step={DEMO_PRICE_RANGE.step}
               value={maxPrice}
               onChange={(e) => onMaxPriceChange(Number(e.target.value))}
-              className="w-full h-2 bg-[#23303B] rounded-lg appearance-none cursor-pointer accent-[#B7FF3C] focus:outline-none"
+              className="w-full h-2 bg-[#23303B] rounded-lg appearance-none cursor-pointer accent-[#B7FF3C] focus:outline-none focus:ring-1 focus:ring-[#B7FF3C] transition-all"
               aria-label="Filter by maximum hourly price"
             />
             <div className="flex justify-between text-[10px] text-neutral-400 pt-1">
@@ -156,7 +156,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
               key={sport}
               type="button"
               onClick={() => onSportChange(isActive ? 'All Sports' : sport)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer active:scale-95 ${
                 isActive
                   ? 'bg-[#B7FF3C] text-[#090D10] font-bold shadow-sm shadow-[#B7FF3C]/30'
                   : 'bg-[#131B22] text-neutral-300 border border-[#23303B] hover:border-neutral-500 hover:text-white'
@@ -170,3 +170,4 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
     </div>
   );
 };
+

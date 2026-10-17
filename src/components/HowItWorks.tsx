@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Compass, CalendarClock, Send, Info } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 export const HowItWorks: React.FC = () => {
   const steps = [
@@ -35,7 +36,7 @@ export const HowItWorks: React.FC = () => {
     <section id="how-it-works" className="py-20 bg-[#0E1419] border-t border-b border-[#23303B] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#B7FF3C]">
             Simple 3-Step Process
           </span>
@@ -46,46 +47,50 @@ export const HowItWorks: React.FC = () => {
             Booking a high-quality sports turf shouldn’t involve endless phone calls and manual coordination.
             Here is how our streamlined workflow operates.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Steps Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {steps.map((step) => {
+          {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
-              <div
+              <ScrollReveal
                 key={step.number}
-                className="relative bg-[#131B22] border border-[#23303B] hover:border-[#B7FF3C]/50 rounded-2xl p-7 transition-all duration-300 hover:-translate-y-1 group flex flex-col justify-between"
+                delayMs={idx * 120}
+                className="h-full"
               >
-                {/* Step Header */}
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-[#0E1419] border border-[#23303B] group-hover:border-[#B7FF3C]/40 flex items-center justify-center text-[#B7FF3C] transition-colors">
-                      <Icon className="w-6 h-6 stroke-[2]" />
+                <div className="relative bg-[#131B22] border border-[#23303B] hover:border-[#B7FF3C]/50 rounded-2xl p-7 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(183,255,60,0.08)] group flex flex-col justify-between h-full">
+                  {/* Step Header */}
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-12 h-12 rounded-xl bg-[#0E1419] border border-[#23303B] group-hover:border-[#B7FF3C]/40 group-hover:bg-[#131B22] flex items-center justify-center text-[#B7FF3C] transition-all duration-300">
+                        <Icon className="w-6 h-6 stroke-[2] group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                      <span className="text-3xl font-black text-neutral-700 group-hover:text-[#B7FF3C]/40 transition-colors duration-300">
+                        {step.number}
+                      </span>
                     </div>
-                    <span className="text-3xl font-black text-neutral-700 group-hover:text-[#B7FF3C]/30 transition-colors">
-                      {step.number}
-                    </span>
+
+                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#B7FF3C] transition-colors duration-200">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#B7FF3C] transition-colors">
-                    {step.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
-                    {step.description}
-                  </p>
+                  {/* Bottom Highlight Pill */}
+                  <div className="mt-6 pt-4 border-t border-[#23303B]/60">
+                    <span className="text-[11px] font-semibold text-[#B7FF3C] uppercase tracking-wider">
+                      {step.highlight}
+                    </span>
+                  </div>
                 </div>
-
-                {/* Bottom Highlight Pill */}
-                <div className="mt-6 pt-4 border-t border-[#23303B]/60">
-                  <span className="text-[11px] font-semibold text-[#B7FF3C] uppercase tracking-wider">
-                    {step.highlight}
-                  </span>
-                </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
+
 
         {/* Prototype Transparency Notice Box */}
         <div className="mt-12 p-4 sm:p-5 rounded-2xl bg-[#131B22]/80 border border-[#23303B] max-w-3xl mx-auto flex items-start gap-3.5">

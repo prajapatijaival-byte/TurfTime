@@ -7,6 +7,7 @@ import { VenueCard } from './VenueCard';
 import { InteractiveFilters } from './InteractiveFilters';
 import { VenueModal } from './VenueModal';
 import { ShieldAlert, Frown, Sparkles } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 interface VenueSectionProps {
   onSelectVenueForBooking: (venueId: string, duration?: number) => void;
@@ -67,7 +68,7 @@ export const VenueSection: React.FC<VenueSectionProps> = ({
     <section id="explore" className="py-20 bg-[#090D10] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-12 space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#131B22] border border-[#23303B] text-xs font-semibold text-[#B7FF3C]">
             <Sparkles className="w-3.5 h-3.5" />
             Curated Mumbai Arenas
@@ -79,40 +80,44 @@ export const VenueSection: React.FC<VenueSectionProps> = ({
             Compare verified pitch specifications, synthetic turf quality, and transparent hourly rates
             across prime Mumbai sports hubs.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Interactive Multi-Filter Bar */}
-        <InteractiveFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedSport={selectedSport}
-          onSportChange={setSelectedSport}
-          maxPrice={maxPrice}
-          onMaxPriceChange={setMaxPrice}
-          onResetFilters={handleResetFilters}
-          totalCount={SAMPLE_VENUES.length}
-          filteredCount={filteredVenues.length}
-        />
+        <ScrollReveal delayMs={100}>
+          <InteractiveFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedSport={selectedSport}
+            onSportChange={setSelectedSport}
+            maxPrice={maxPrice}
+            onMaxPriceChange={setMaxPrice}
+            onResetFilters={handleResetFilters}
+            totalCount={SAMPLE_VENUES.length}
+            filteredCount={filteredVenues.length}
+          />
+        </ScrollReveal>
 
         {/* Venues Grid or Empty State */}
         {filteredVenues.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-            {filteredVenues.map((venue) => (
-              <VenueCard
-                key={venue.id}
-                venue={venue}
-                onViewDetails={(v) => setActiveModalVenue(v)}
-                onBookNow={handleBookFromCard}
-              />
+            {filteredVenues.map((venue, idx) => (
+              <ScrollReveal key={venue.id} delayMs={idx * 75} className="h-full">
+                <VenueCard
+                  venue={venue}
+                  onViewDetails={(v) => setActiveModalVenue(v)}
+                  onBookNow={handleBookFromCard}
+                />
+              </ScrollReveal>
             ))}
           </div>
         ) : (
           /* Helpful Empty State */
-          <div className="bg-[#0E1419] border border-[#23303B] rounded-2xl p-12 text-center max-w-xl mx-auto space-y-4">
+          <div className="bg-[#0E1419] border border-[#23303B] rounded-2xl p-12 text-center max-w-xl mx-auto space-y-4 animate-in fade-in duration-300">
             <div className="w-14 h-14 rounded-2xl bg-[#131B22] border border-[#23303B] flex items-center justify-center mx-auto text-neutral-400">
               <Frown className="w-7 h-7 text-[#B7FF3C]" />
             </div>
             <h3 className="text-lg font-bold text-white">No Matching Venues Found</h3>
+
             <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
               We couldn’t find any sports venues matching your current criteria (Search:{' '}
               {searchQuery ? `"${searchQuery}"` : 'None'}, Sport: {selectedSport}, Max Rate: ₹{maxPrice}/hr).

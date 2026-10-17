@@ -17,7 +17,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
   onBookNow,
 }) => {
   return (
-    <article className="group bg-[#0E1419] border border-[#23303B] hover:border-[#B7FF3C]/50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-[#B7FF3C]/5 flex flex-col h-full">
+    <article className="group bg-[#0E1419] border border-[#23303B] hover:border-[#B7FF3C]/60 rounded-2xl overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(183,255,60,0.08)] flex flex-col h-full">
       {/* Image Container with Badges */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#131B22]">
         <Image
@@ -25,7 +25,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
           alt={`Floodlit artificial sports turf at ${venue.name}, ${venue.locality}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0E1419] via-transparent to-transparent opacity-80" />
 
@@ -49,7 +49,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
           {venue.sports.map((sport) => (
             <span
               key={sport}
-              className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-[#131B22]/90 backdrop-blur-sm text-neutral-300 border border-[#23303B]"
+              className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-[#131B22]/90 backdrop-blur-sm text-neutral-300 border border-[#23303B] transition-colors group-hover:border-[#B7FF3C]/30"
             >
               {sport}
             </span>
@@ -62,7 +62,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
         {/* Title and Hourly Rate */}
         <div>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-lg font-bold text-white group-hover:text-[#B7FF3C] transition-colors leading-snug">
+            <h3 className="text-lg font-bold text-white group-hover:text-[#B7FF3C] transition-colors duration-200 leading-snug">
               {venue.name}
             </h3>
           </div>
@@ -90,7 +90,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
               Illustrative Rate
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-extrabold text-[#B7FF3C]">
+              <span className="text-xl font-extrabold text-[#B7FF3C] group-hover:brightness-110 transition-all duration-200">
                 ₹{venue.hourlyRate.toLocaleString('en-IN')}
               </span>
               <span className="text-xs text-neutral-400">/ hour</span>
@@ -102,7 +102,7 @@ export const VenueCard: React.FC<VenueCardProps> = ({
             <button
               type="button"
               onClick={() => onViewDetails(venue)}
-              className="inline-flex items-center justify-center p-2 rounded-xl text-neutral-300 hover:text-white bg-[#131B22] border border-[#23303B] hover:border-neutral-500 transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center p-2 rounded-xl text-neutral-300 hover:text-white bg-[#131B22] border border-[#23303B] hover:border-neutral-500 hover:bg-[#18222B] active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
               aria-label={`View details for ${venue.name}`}
               title="View pitch specifications and price breakdown"
             >
@@ -111,10 +111,10 @@ export const VenueCard: React.FC<VenueCardProps> = ({
             <button
               type="button"
               onClick={() => onBookNow(venue.id)}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.98] transition-all duration-200 shadow-md shadow-[#B7FF3C]/15 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] hover:shadow-[0_4px_16px_rgba(183,255,60,0.25)] active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] group/btn"
             >
               Book Turf
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform duration-200" />
             </button>
           </div>
         </div>
@@ -122,3 +122,4 @@ export const VenueCard: React.FC<VenueCardProps> = ({
     </article>
   );
 };
+

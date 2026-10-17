@@ -18,6 +18,7 @@ import {
   Loader2,
   Database,
 } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 interface BookingFormProps {
   preselectedVenueId: string;
@@ -72,16 +73,22 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [apiError, setApiError] = useState<{ message: string; requiresConfig?: boolean } | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<SavedBookingConfirmation | null>(null);
 
-  // Close confirmation modal on Escape key
+  // Lock body scroll and handle Escape key for confirmation modal
   useEffect(() => {
     if (!confirmedBooking) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setConfirmedBooking(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [confirmedBooking]);
 
   // Find currently selected venue
@@ -236,7 +243,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     <section id="booking" className="py-20 bg-[#090D10] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#B7FF3C]">
             Phase 2 Database Connected
           </span>
@@ -247,7 +254,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             Select your preferred Mumbai venue, configure date and duration, and submit an authoritative
             inquiry directly to the database.
           </p>
-        </div>
+        </ScrollReveal>
+
 
         {/* Phase 2 Integration Notification Card */}
         <div className="mb-10 p-4 sm:p-5 rounded-2xl bg-[#0E1419] border border-[#23303B] max-w-4xl mx-auto flex items-start gap-3.5">
@@ -623,7 +631,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     <span className="text-[10px] text-neutral-400">(Server-verified rate)</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl sm:text-3xl font-black text-[#B7FF3C]">
+                    <span
+                      key={`${formData.venueId}-${formData.duration}`}
+                      className="text-2xl sm:text-3xl font-black text-[#B7FF3C] animate-price-pulse inline-block"
+                    >
                       ₹{estimatedTotal.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -660,9 +671,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
           aria-labelledby="confirmed-modal-title"
         >
           <div
-            className="relative w-full max-w-xl bg-[#0E1419] border border-[#B7FF3C]/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default"
+            className="relative w-full max-w-xl bg-[#0E1419] border border-[#B7FF3C]/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 cursor-default animate-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
+
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#23303B]">
               <div className="flex items-center gap-3">

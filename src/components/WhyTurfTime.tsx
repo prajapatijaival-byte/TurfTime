@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
 import { Sparkles, Calculator, CalendarCheck2, ShieldCheck } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 export const WhyTurfTime: React.FC = () => {
   const benefits = [
@@ -39,7 +38,7 @@ export const WhyTurfTime: React.FC = () => {
     <section id="why-us" className="py-20 bg-[#090D10] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#B7FF3C]">
             Engineered For Players
           </span>
@@ -49,32 +48,35 @@ export const WhyTurfTime: React.FC = () => {
           <p className="text-sm sm:text-base text-neutral-400">
             A purpose-built digital platform removing friction from sports venue bookings across Mumbai.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* 4 Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((item, index) => {
             const Icon = item.icon;
             return (
-              <div
+              <ScrollReveal
                 key={index}
-                className="bg-[#0E1419] border border-[#23303B] hover:border-[#B7FF3C]/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-[#B7FF3C]/5 flex flex-col justify-between group"
+                delayMs={index * 80}
+                className="h-full"
               >
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#131B22] border border-[#23303B] group-hover:border-[#B7FF3C]/50 flex items-center justify-center text-[#B7FF3C] mb-5 transition-colors">
-                    <Icon className="w-6 h-6 stroke-[2]" />
+                <div className="bg-[#0E1419] border border-[#23303B] hover:border-[#B7FF3C]/50 rounded-2xl p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(183,255,60,0.08)] flex flex-col justify-between group h-full">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-[#131B22] border border-[#23303B] group-hover:border-[#B7FF3C]/40 group-hover:bg-[#131B22] flex items-center justify-center text-[#B7FF3C] mb-5 transition-all duration-300">
+                      <Icon className="w-6 h-6 stroke-[2] group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#B7FF3C] transition-colors duration-200">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed mb-4">
+                      {item.description}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#B7FF3C] transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed mb-4">
-                    {item.description}
-                  </p>
+                  <div className="pt-3 border-t border-[#23303B]/60 text-[11px] text-neutral-400 font-medium">
+                    {item.detail}
+                  </div>
                 </div>
-                <div className="pt-3 border-t border-[#23303B]/60 text-[11px] text-neutral-400 font-medium">
-                  {item.detail}
-                </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
@@ -82,3 +84,4 @@ export const WhyTurfTime: React.FC = () => {
     </section>
   );
 };
+

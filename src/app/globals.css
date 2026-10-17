@@ -50,8 +50,136 @@ section[id] {
   background: #344654;
 }
 
-/* Focus styles for accessibility */
+/* Accessible focus styling */
 *:focus-visible {
   outline: 2px solid #B7FF3C;
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Phase 2.5: Premium Animation System & Micro-Interactions
+   ========================================================================== */
+
+/* Keyframe Animations */
+@keyframes heroEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes priceHighlight {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.25);
+    text-shadow: 0 0 14px rgba(183, 255, 60, 0.65);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Animation utility classes */
+.animate-hero-fade {
+  animation: heroEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-hero-delay-1 {
+  animation-delay: 100ms;
+}
+
+.animate-hero-delay-2 {
+  animation-delay: 200ms;
+}
+
+.animate-hero-delay-3 {
+  animation-delay: 300ms;
+}
+
+.animate-hero-delay-4 {
+  animation-delay: 400ms;
+}
+
+.animate-modal-in {
+  animation: modalZoomIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-price-pulse {
+  animation: priceHighlight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-subtle-float {
+  animation: subtleFloat 4s ease-in-out infinite;
+}
+
+/* Scroll reveal system with zero JS failure penalty */
+.reveal-on-scroll {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* When JS is initialized and observing, hidden elements start faded and translated */
+html.js-ready .reveal-on-scroll:not(.revealed) {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+html.js-ready .reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Accessibility: Respect Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-on-scroll,
+  html.js-ready .reveal-on-scroll:not(.revealed),
+  html.js-ready .reveal-on-scroll.revealed {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

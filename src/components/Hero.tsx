@@ -21,7 +21,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
           {/* Left Column: Headlines & Actions */}
           <div className="lg:col-span-7 space-y-6 text-left">
             {/* Demo Notice Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#131B22] border border-[#23303B] shadow-inner">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#131B22] border border-[#23303B] shadow-inner animate-hero-fade">
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B7FF3C] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B7FF3C]"></span>
@@ -31,12 +31,12 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
               </span>
               <span className="text-neutral-500">•</span>
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#B7FF3C]">
-                Phase 1 Frontend Prototype
+                Phase 2 Connected
               </span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.08]">
+            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.08] animate-hero-fade animate-hero-delay-1">
               Your Game.{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B7FF3C] via-[#CEFF66] to-[#88CA16]">
                 Your Turf.
@@ -45,30 +45,30 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-base sm:text-lg text-neutral-400 max-w-2xl leading-relaxed font-normal">
+            <p className="text-base sm:text-lg text-neutral-400 max-w-2xl leading-relaxed font-normal animate-hero-fade animate-hero-delay-2">
               Experience modern sports venue discovery. Browse FIFA-grade floodlit synthetic turf
               arenas across Mumbai localities, calculate slot estimates in real time, and submit
               seamless booking inquiries for your squad.
             </p>
 
             {/* CTAs */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 animate-hero-fade animate-hero-delay-3">
               <button
                 type="button"
                 id="hero-explore-cta"
                 onClick={onExploreClick}
-                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-[#B7FF3C]/20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] hover:shadow-[0_4px_24px_rgba(183,255,60,0.3)] active:scale-[0.98] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] group"
               >
-                <Compass className="w-4 h-4 stroke-[2.5]" />
+                <Compass className="w-4 h-4 stroke-[2.5] group-hover:rotate-45 transition-transform duration-300" />
                 Explore Turfs
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                <ArrowRight className="w-4 h-4 stroke-[2.5] group-hover:translate-x-1 transition-transform duration-200" />
               </button>
 
               <button
                 type="button"
                 id="hero-how-it-works-cta"
                 onClick={onHowItWorksClick}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-neutral-200 bg-[#131B22] border border-[#23303B] hover:border-neutral-500 hover:text-white hover:bg-[#18222B] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-neutral-200 bg-[#131B22] border border-[#23303B] hover:border-neutral-500 hover:text-white hover:bg-[#18222B] active:scale-[0.98] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
               >
                 <Clock className="w-4 h-4 text-neutral-400" />
                 How It Works
@@ -76,7 +76,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
             </div>
 
             {/* Quick Micro-Highlights */}
-            <div className="pt-4 border-t border-[#23303B]/80 grid grid-cols-3 gap-4 max-w-lg">
+            <div className="pt-4 border-t border-[#23303B]/80 grid grid-cols-3 gap-4 max-w-lg animate-hero-fade animate-hero-delay-4">
               <div className="space-y-0.5">
                 <p className="text-xs text-neutral-400">Locations</p>
                 <p className="text-sm font-bold text-white flex items-center gap-1">
@@ -96,18 +96,18 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
           </div>
 
           {/* Right Column: Hero Visual Showcase */}
-          <div className="lg:col-span-5 relative">
+          <div className="lg:col-span-5 relative animate-hero-fade animate-hero-delay-2">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               {/* Decorative Frame */}
-              <div className="relative rounded-2xl overflow-hidden border border-[#23303B] bg-[#131B22] shadow-2xl shadow-black/80 group">
-                <div className="relative aspect-[16/10] w-full">
+              <div className="relative rounded-2xl overflow-hidden border border-[#23303B] hover:border-[#B7FF3C]/40 bg-[#131B22] shadow-2xl shadow-black/80 group transition-all duration-300">
+                <div className="relative aspect-[16/10] w-full overflow-hidden">
                   <Image
                     src="/images/hero/hero-turf.jpg"
                     alt="Premium floodlit sports turf stadium with artificial grass"
                     fill
                     priority
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090D10] via-transparent to-transparent opacity-80" />
                 </div>
@@ -131,7 +131,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
               </div>
 
               {/* Floating Disclaimer Badge */}
-              <div className="mt-3 flex items-start gap-2 p-3 rounded-xl bg-[#131B22]/90 border border-[#23303B] text-neutral-400">
+              <div className="mt-3 flex items-start gap-2 p-3 rounded-xl bg-[#131B22]/90 border border-[#23303B] text-neutral-400 animate-subtle-float">
                 <ShieldAlert className="w-4 h-4 text-[#B7FF3C] shrink-0 mt-0.5" />
                 <p className="text-[11px] leading-tight">
                   <strong className="text-neutral-200">Demonstration Model:</strong> Venue listings,
@@ -145,3 +145,4 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
     </section>
   );
 };
+
