@@ -132,10 +132,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Insert Record into Supabase PostgreSQL
-    const { data, error } = await supabase
+    // 5. Generate secure UUID and Insert Record into Supabase PostgreSQL
+    const bookingId = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+
+    const { error } = await supabase
       .from('booking_requests')
       .insert({
+        id: bookingId,
+        created_at: createdAt,
         customer_name: fullName,
         email,
         phone: cleanPhone,
@@ -147,9 +152,7 @@ export async function POST(request: NextRequest) {
         estimated_price: trustedEstimatedPrice,
         notes: notes || null,
         status: 'pending',
-      })
-      .select('id, created_at, status, venue_name, booking_date, start_time, duration_hours, estimated_price')
-      .single();
+      });
 
     if (error) {
       console.error('Supabase insert failed with code:', error.code, error.message);
@@ -176,14 +179,14 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Your booking inquiry has been recorded and is currently pending review.',
         booking: {
-          id: data.id,
-          createdAt: data.created_at,
-          status: data.status,
-          venueName: data.venue_name,
-          bookingDate: data.booking_date,
-          startTime: data.start_time,
-          durationHours: data.duration_hours,
-          estimatedPrice: data.estimated_price,
+          id: bookingId,
+          createdAt,
+          status: 'pending',
+          venueName: trustedVenueName,
+          bookingDate: date,
+          startTime: timeSlot,
+          durationHours: duration,
+          estimatedPrice: trustedEstimatedPrice,
         },
       },
       { status: 201 }
