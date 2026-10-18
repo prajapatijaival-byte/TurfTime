@@ -11,15 +11,25 @@ import { ScrollReveal } from './ScrollReveal';
 
 interface VenueSectionProps {
   onSelectVenueForBooking: (venueId: string, duration?: number) => void;
+  onViewDetails?: (venue: Venue) => void;
 }
 
 export const VenueSection: React.FC<VenueSectionProps> = ({
   onSelectVenueForBooking,
+  onViewDetails,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSport, setSelectedSport] = useState('All Sports');
   const [maxPrice, setMaxPrice] = useState(DEMO_PRICE_RANGE.defaultMax);
-  const [activeModalVenue, setActiveModalVenue] = useState<Venue | null>(null);
+  const [internalModalVenue, setInternalModalVenue] = useState<Venue | null>(null);
+
+  const handleOpenDetails = (venue: Venue) => {
+    if (onViewDetails) {
+      onViewDetails(venue);
+    } else {
+      setInternalModalVenue(venue);
+    }
+  };
 
   // Multi-filter evaluation
   const filteredVenues = useMemo(() => {
@@ -99,12 +109,12 @@ export const VenueSection: React.FC<VenueSectionProps> = ({
 
         {/* Venues Grid or Empty State */}
         {filteredVenues.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredVenues.map((venue, idx) => (
               <ScrollReveal key={venue.id} delayMs={idx * 75} className="h-full">
                 <VenueCard
                   venue={venue}
-                  onViewDetails={(v) => setActiveModalVenue(v)}
+                  onViewDetails={handleOpenDetails}
                   onBookNow={handleBookFromCard}
                 />
               </ScrollReveal>
@@ -143,18 +153,20 @@ export const VenueSection: React.FC<VenueSectionProps> = ({
               facilities are mock records designed for this technical evaluation.
             </span>
           </div>
-          <span className="text-[11px] text-neutral-400 shrink-0">
-            Phase 1 Frontend Prototype
+          <span className="text-[11px] text-[#B7FF3C] shrink-0 font-medium">
+            Curated Demo Data
           </span>
         </div>
       </div>
 
-      {/* Modal Dialog */}
-      <VenueModal
-        venue={activeModalVenue}
-        onClose={() => setActiveModalVenue(null)}
-        onSelectForBooking={handleBookFromModal}
-      />
+      {/* Modal Dialog (only if not handled by parent) */}
+      {!onViewDetails && (
+        <VenueModal
+          venue={internalModalVenue}
+          onClose={() => setInternalModalVenue(null)}
+          onSelectForBooking={handleBookFromModal}
+        />
+      )}
     </section>
   );
 };

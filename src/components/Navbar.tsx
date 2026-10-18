@@ -16,12 +16,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setMobileMenuOpen(false);
+    };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const navLinks = [
     { label: 'Home', href: '#hero' },
+    { label: 'Match Finder', href: '#match-finder' },
     { label: 'Explore Turfs', href: '#explore' },
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'Why TurfTime', href: '#why-us' },
@@ -77,8 +90,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
                 Sports Venues
               </span>
             </div>
-            <span className="ml-1.5 hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#131B22] border border-[#23303B] text-neutral-400">
-              Phase 1 Demo
+            <span className="ml-1.5 hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#131B22] border border-[#23303B] text-[#B7FF3C]">
+              Mumbai Arenas
             </span>
           </Link>
 
@@ -153,7 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               Menu Navigation
             </span>
             <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#131B22] text-[#B7FF3C] border border-[#B7FF3C]/30">
-              Phase 2 Connected
+              Booking Enabled
             </span>
           </div>
           <div className="flex flex-col space-y-1">

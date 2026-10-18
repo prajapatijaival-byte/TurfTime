@@ -17,6 +17,8 @@ import {
   AlertCircle,
   Loader2,
   Database,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
 
@@ -36,7 +38,17 @@ export interface SavedBookingConfirmation {
   estimatedPrice: number;
 }
 
-const CURRENT_DEMO_DATE = '2026-10-18';
+/**
+ * Calculates the user's local calendar date in YYYY-MM-DD format.
+ * Uses local getFullYear, getMonth, and getDate to avoid UTC day-shift in India (IST).
+ */
+export function getLocalTodayDate(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 export const BookingForm: React.FC<BookingFormProps> = ({
   preselectedVenueId,
@@ -44,17 +56,30 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 }) => {
   const [prevVenueId, setPrevVenueId] = useState(preselectedVenueId);
   const [prevDuration, setPrevDuration] = useState(preselectedDuration);
+  const [minDate, setMinDate] = useState<string>('');
 
   const [formData, setFormData] = useState<BookingFormData>({
     fullName: '',
     email: '',
     phone: '',
     venueId: preselectedVenueId || SAMPLE_VENUES[0].id,
-    date: CURRENT_DEMO_DATE,
+    date: '',
     timeSlot: DEMO_TIME_SLOTS[4], // Prime evening slot default
     duration: preselectedDuration || 1,
     notes: '',
   });
+
+  // Client-only initialization of local calendar date to satisfy static prerendering
+  useEffect(() => {
+    const rafId = requestAnimationFrame(() => {
+      const today = getLocalTodayDate();
+      setMinDate(today);
+      setFormData((prev) => (prev.date ? prev : { ...prev, date: today }));
+    });
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   // React pattern: adjust state during rendering when props change
   if (preselectedVenueId !== prevVenueId || preselectedDuration !== prevDuration) {
@@ -72,6 +97,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<{ message: string; requiresConfig?: boolean } | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<SavedBookingConfirmation | null>(null);
+  const [copiedRefId, setCopiedRefId] = useState<boolean>(false);
+
+  const handleCopyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedRefId(true);
+      setTimeout(() => setCopiedRefId(false), 2000);
+    } catch {
+      // Fallback if clipboard API is restricted
+    }
+  };
 
   // Lock body scroll and handle Escape key for confirmation modal
   useEffect(() => {
@@ -129,7 +165,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
     if (!data.date) {
       errs.date = 'Please pick a booking date.';
-    } else if (data.date < CURRENT_DEMO_DATE) {
+    } else if (minDate && data.date < minDate) {
       errs.date = 'Booking date cannot be in the past.';
     }
 
@@ -230,7 +266,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       email: '',
       phone: '',
       venueId: SAMPLE_VENUES[0].id,
-      date: CURRENT_DEMO_DATE,
+      date: getLocalTodayDate(),
       timeSlot: DEMO_TIME_SLOTS[4],
       duration: 1,
       notes: '',
@@ -245,26 +281,26 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         {/* Section Header */}
         <ScrollReveal className="text-center max-w-3xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#B7FF3C]">
-            Phase 2 Database Connected
+            Instant Booking Requests
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Request a Turf Slot
           </h2>
           <p className="text-sm sm:text-base text-neutral-400">
-            Select your preferred Mumbai venue, configure date and duration, and submit an authoritative
-            inquiry directly to the database.
+            Select your preferred Mumbai venue, configure date and duration, and submit a booking
+            request for staff review.
           </p>
         </ScrollReveal>
 
 
-        {/* Phase 2 Integration Notification Card */}
+        {/* Live Integration Notification Card */}
         <div className="mb-10 p-4 sm:p-5 rounded-2xl bg-[#0E1419] border border-[#23303B] max-w-4xl mx-auto flex items-start gap-3.5">
           <div className="p-2 rounded-lg bg-[#131B22] border border-[#23303B] text-[#B7FF3C] shrink-0 mt-0.5">
             <Database className="w-4 h-4" />
           </div>
           <div className="space-y-1">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Phase 2 Supabase PostgreSQL Integration
+              Supabase PostgreSQL Integration
             </h4>
             <p className="text-xs text-neutral-400 leading-relaxed">
               Submissions are validated by the server-side Route Handler (<code className="text-[#B7FF3C]">/api/bookings</code>),
@@ -458,7 +494,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     <input
                       id="field-date"
                       type="date"
-                      min={CURRENT_DEMO_DATE}
+                      min={minDate || undefined}
                       value={formData.date}
                       onChange={(e) => handleChange('date', e.target.value)}
                       onBlur={() => handleBlur('date')}
@@ -551,6 +587,54 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     placeholder="e.g. Need extra football bibs, requesting match referee recommendation, or organizing a 7v7 friendly."
                     className="w-full bg-[#131B22] border border-[#23303B] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all resize-none"
                   />
+                </div>
+              </div>
+
+              {/* Pre-Submission Request Summary & Verification Review */}
+              <div className="p-4 sm:p-5 rounded-xl bg-[#131B22] border border-[#23303B] space-y-3.5 shadow-inner">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#23303B]">
+                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-200 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#B7FF3C]" />
+                    Review Your Request Summary
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    Status: Pending Verification
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Chosen Turf</span>
+                    <span className="font-bold text-white truncate block">{selectedVenue.name}</span>
+                    <span className="text-[10px] text-neutral-400">{selectedVenue.locality}</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Date & Slot</span>
+                    <span className="font-bold text-white block">{formData.date}</span>
+                    <span className="text-[10px] text-neutral-400 truncate block">{formData.timeSlot.split(' ')[0]}</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Duration</span>
+                    <span className="font-bold text-white block">
+                      {formData.duration} {formData.duration === 1 ? 'Hour' : 'Hours'}
+                    </span>
+                    <span className="text-[10px] text-neutral-400">{formData.duration * 60} mins play</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Estimated Price</span>
+                    <span className="font-black text-[#B7FF3C] text-sm block">
+                      ₹{estimatedTotal.toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-[10px] text-neutral-400">₹{selectedVenue.hourlyRate.toLocaleString('en-IN')}/hr</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-[#23303B]/70 flex items-start gap-2 text-[11px] text-neutral-400">
+                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                  <span>
+                    <strong className="text-neutral-300">Important:</strong> Submitting this request records a{' '}
+                    <strong className="text-amber-300">Pending</strong> inquiry. It does <em>not</em> confirm an immediate slot reservation until verified by venue coordinators.
+                  </span>
                 </div>
               </div>
 
@@ -663,7 +747,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       </ScrollReveal>
     </div>
 
-      {/* Phase 2 Database Submission Success Modal */}
+      {/* Database Submission Success Modal */}
       {confirmedBooking && (
         <div
           onClick={() => setConfirmedBooking(null)}
@@ -693,7 +777,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       Pending Review
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-400">Successfully inserted into Supabase PostgreSQL</p>
+                  <p className="text-xs text-neutral-400">Successfully recorded in database</p>
                 </div>
               </div>
               <button
@@ -721,11 +805,26 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
             {/* Assembled Database Record Details */}
             <div className="bg-[#090D10] border border-[#23303B] rounded-xl p-4 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between py-1 border-b border-[#23303B]/60">
+              <div className="flex items-center justify-between py-1.5 border-b border-[#23303B]/60">
                 <span className="text-neutral-400">Database Reference ID:</span>
-                <code className="font-mono text-[11px] text-[#B7FF3C] bg-[#131B22] px-2 py-0.5 rounded border border-[#23303B]">
-                  {confirmedBooking.id}
-                </code>
+                <div className="flex items-center gap-1.5">
+                  <code className="font-mono text-[11px] text-[#B7FF3C] bg-[#131B22] px-2 py-0.5 rounded border border-[#23303B]">
+                    {confirmedBooking.id}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyId(confirmedBooking.id)}
+                    className="p-1 rounded bg-[#131B22] border border-[#23303B] hover:border-[#B7FF3C]/50 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                    title={copiedRefId ? 'Copied to clipboard' : 'Copy reference ID'}
+                    aria-label="Copy booking reference ID"
+                  >
+                    {copiedRefId ? (
+                      <Check className="w-3.5 h-3.5 text-[#B7FF3C]" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="flex justify-between py-1 border-b border-[#23303B]/60">
                 <span className="text-neutral-400">Venue:</span>
@@ -742,7 +841,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 </span>
               </div>
               <div className="flex justify-between pt-2 text-sm font-bold">
-                <span className="text-white">Authoritative Estimated Total:</span>
+                <span className="text-white">Estimated Total:</span>
                 <span className="text-[#B7FF3C] text-base">
                   ₹{confirmedBooking.estimatedPrice.toLocaleString('en-IN')}
                 </span>

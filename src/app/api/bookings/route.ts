@@ -71,8 +71,10 @@ export async function POST(request: NextRequest) {
     if (!date || !dateRegex.test(date)) {
       validationErrors.date = 'Date must be formatted as YYYY-MM-DD.';
     } else {
-      const todayIso = new Date().toISOString().split('T')[0];
-      if (date < todayIso) {
+      // Safe against global timezone offsets (allows local today across any timezone up to UTC-12)
+      const now = new Date();
+      const yesterdayUtc = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      if (date < yesterdayUtc) {
         validationErrors.date = 'Booking date cannot be in the past.';
       }
     }

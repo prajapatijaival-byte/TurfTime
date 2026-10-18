@@ -5,7 +5,7 @@ import { Venue } from '@/types';
  * 
  * IMPORTANT DISCLAIMER:
  * All venue names, hourly prices, facilities, images, and time slots are
- * fictional demonstration data created for the TurfTime Technical Assessment (Phase 1).
+ * illustrative demonstration data created for the TurfTime sports venue platform.
  * They do not represent real-world registered businesses, verified availability,
  * or commercial contractual rates.
  */

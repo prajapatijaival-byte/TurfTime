@@ -84,26 +84,26 @@ export const VenueCard: React.FC<VenueCardProps> = ({
         </div>
 
         {/* Price & Action Area */}
-        <div className="mt-auto pt-4 border-t border-[#23303B]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <span className="text-[10px] uppercase font-semibold tracking-wider text-neutral-400 block">
+        <div className="mt-auto pt-4 border-t border-[#23303B]/80 flex items-center justify-between gap-2.5">
+          <div className="min-w-0">
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-neutral-400 block truncate">
               Illustrative Rate
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-extrabold text-[#B7FF3C] group-hover:brightness-110 transition-all duration-200">
+              <span className="text-lg sm:text-xl font-extrabold text-[#B7FF3C] group-hover:brightness-110 transition-all duration-200">
                 ₹{venue.hourlyRate.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs text-neutral-400">/ hour</span>
+              <span className="text-xs text-neutral-400">/hr</span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => onViewDetails(venue)}
               className="inline-flex items-center justify-center p-2 rounded-xl text-neutral-300 hover:text-white bg-[#131B22] border border-[#23303B] hover:border-neutral-500 hover:bg-[#18222B] active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
-              aria-label={`View details for ${venue.name}`}
+              aria-label={`View pitch specifications for ${venue.name}`}
               title="View pitch specifications and price breakdown"
             >
               <Eye className="w-4 h-4" />
@@ -111,7 +111,8 @@ export const VenueCard: React.FC<VenueCardProps> = ({
             <button
               type="button"
               onClick={() => onBookNow(venue.id)}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] hover:shadow-[0_4px_16px_rgba(183,255,60,0.25)] active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] group/btn"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#B7FF3C] text-[#090D10] hover:bg-[#A3EA30] hover:shadow-[0_4px_16px_rgba(183,255,60,0.25)] active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C] group/btn"
+              aria-label={`Book turf slot at ${venue.name}`}
             >
               Book Turf
               <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform duration-200" />

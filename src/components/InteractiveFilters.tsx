@@ -71,7 +71,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5 pt-5 items-end">
         {/* Search Field */}
         <div className="md:col-span-5 space-y-1.5">
-          <label htmlFor="venue-search-input" className="block text-xs font-semibold uppercase tracking-wider text-neutral-400">
+          <label htmlFor="venue-search-input" className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
             Search Locality or Venue Name
           </label>
           <div className="relative">
@@ -82,7 +82,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="e.g. Mahalaxmi, Worli, Rooftop, Football..."
-              className="w-full bg-[#131B22] border border-[#23303B] rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all duration-200"
+              className="w-full bg-[#131B22] border border-[#23303B] rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-neutral-400 focus:outline-none focus:border-[#B7FF3C] focus:ring-1 focus:ring-[#B7FF3C] transition-all duration-200"
             />
             {searchQuery && (
               <button
@@ -99,7 +99,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
 
         {/* Sport Type Filter */}
         <div className="md:col-span-4 space-y-1.5">
-          <label htmlFor="sport-type-select" className="block text-xs font-semibold uppercase tracking-wider text-neutral-400">
+          <label htmlFor="sport-type-select" className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
             Sport / Activity Type
           </label>
           <select
@@ -119,7 +119,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
         {/* Max Hourly Budget Slider */}
         <div className="md:col-span-3 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="price-range-slider" className="font-semibold uppercase tracking-wider text-neutral-400">
+            <label htmlFor="price-range-slider" className="font-semibold uppercase tracking-wider text-neutral-300">
               Max Rate:
             </label>
             <span className="font-bold text-[#B7FF3C] bg-[#131B22] px-2 py-0.5 rounded border border-[#23303B] transition-all duration-200">
@@ -138,7 +138,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
               className="w-full h-2 bg-[#23303B] rounded-lg appearance-none cursor-pointer accent-[#B7FF3C] focus:outline-none focus:ring-1 focus:ring-[#B7FF3C] transition-all"
               aria-label="Filter by maximum hourly price"
             />
-            <div className="flex justify-between text-[10px] text-neutral-400 pt-1">
+            <div className="flex justify-between text-[10px] text-neutral-300 pt-1">
               <span>₹{DEMO_PRICE_RANGE.min}</span>
               <span>₹{DEMO_PRICE_RANGE.max}</span>
             </div>
@@ -148,7 +148,7 @@ export const InteractiveFilters: React.FC<InteractiveFiltersProps> = ({
 
       {/* Quick Sport Category Pills */}
       <div className="mt-4 pt-4 border-t border-[#23303B]/60 flex flex-wrap items-center gap-2">
-        <span className="text-xs text-neutral-400 mr-1">Quick Select:</span>
+        <span className="text-xs text-neutral-300 mr-1">Quick Select:</span>
         {AVAILABLE_SPORTS.map((sport) => {
           const isActive = selectedSport === sport;
           return (

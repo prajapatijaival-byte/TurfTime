@@ -190,7 +190,7 @@ export const VenueModal: React.FC<VenueModalProps> = ({
 
             <div className="space-y-2">
               <label className="text-xs text-neutral-400 block">Select Booking Duration:</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {venue.availableDurations.map((duration) => (
                   <button
                     key={duration}
@@ -238,7 +238,7 @@ export const VenueModal: React.FC<VenueModalProps> = ({
             <ShieldAlert className="w-4 h-4 text-[#B7FF3C] shrink-0 mt-0.5" />
             <p>
               <strong>Notice:</strong> Venue details, pictures, and prices are illustrative demo assets.
-              This assessment prototype does not process financial transactions.
+              This platform does not process online financial transactions.
             </p>
           </div>
         </div>

@@ -27,8 +27,8 @@ export const HowItWorks: React.FC = () => {
       icon: Send,
       title: 'Submit Booking Request',
       description:
-        'Fill in your captain or organizer contact details and review your slot summary. The form validates all inputs and prepares your inquiry for Phase 2 processing.',
-      highlight: 'Validated Request Payload',
+        'Fill in your captain or organizer contact details and review your slot summary. The form validates all inputs and records your booking request in Supabase in Pending status.',
+      highlight: 'Supabase Database Persistence',
     },
   ];
 
@@ -92,19 +92,18 @@ export const HowItWorks: React.FC = () => {
         </div>
 
 
-        {/* Prototype Transparency Notice Box */}
+        {/* Booking Transparency Notice Box */}
         <div className="mt-12 p-4 sm:p-5 rounded-2xl bg-[#131B22]/80 border border-[#23303B] max-w-3xl mx-auto flex items-start gap-3.5">
           <div className="p-2 rounded-lg bg-[#0E1419] border border-[#23303B] text-[#B7FF3C] shrink-0 mt-0.5">
             <Info className="w-4 h-4" />
           </div>
           <div className="space-y-1">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Prototype Scope Notice
+              Booking Verification Process
             </h4>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              This Phase 1 technical prototype submits a structured, validated booking inquiry on the frontend.
-              It does not process financial transactions, charge credit cards, or guarantee a verified reservation.
-              Live database slot locking and payment capture are reserved for Phase 2.
+              Booking inquiries are validated server-side and recorded directly into Supabase PostgreSQL in a{' '}
+              <strong className="text-neutral-200">Pending</strong> status. Venue coordinators review live availability before confirming. TurfTime does not charge credit cards or promise automated slot locking.
             </p>
           </div>
         </div>

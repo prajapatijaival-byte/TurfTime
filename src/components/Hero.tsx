@@ -2,14 +2,28 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Compass, Sparkles, ShieldAlert, ArrowRight, Clock, MapPin } from 'lucide-react';
+import { Compass, Sparkles, ShieldAlert, ArrowRight, MapPin } from 'lucide-react';
 
 interface HeroProps {
   onExploreClick: () => void;
-  onHowItWorksClick: () => void;
+  onMatchFinderClick?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick }) => {
+export const Hero: React.FC<HeroProps> = ({
+  onExploreClick,
+  onMatchFinderClick,
+}) => {
+  const handleMatchFinderClick = () => {
+    if (onMatchFinderClick) {
+      onMatchFinderClick();
+    } else {
+      const target = document.querySelector('#match-finder');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <section id="hero" className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
       {/* Subtle background glow */}
@@ -26,12 +40,12 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B7FF3C] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B7FF3C]"></span>
               </span>
-              <span className="text-xs font-semibold text-neutral-300 tracking-wide">
-                Internship Technical Assessment
+              <span className="text-xs font-semibold text-neutral-300 tracking-wide uppercase">
+                MUMBAI SPORTS TURF DISCOVERY
               </span>
               <span className="text-neutral-500">•</span>
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#B7FF3C]">
-                Phase 2 Connected
+                Booking Requests Enabled
               </span>
             </div>
 
@@ -66,12 +80,12 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
 
               <button
                 type="button"
-                id="hero-how-it-works-cta"
-                onClick={onHowItWorksClick}
+                id="hero-match-finder-cta"
+                onClick={handleMatchFinderClick}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-neutral-200 bg-[#131B22] border border-[#23303B] hover:border-[#B7FF3C]/50 hover:text-white hover:bg-[#18222B] active:scale-[0.97] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B7FF3C]"
               >
-                <Clock className="w-4 h-4 text-neutral-400" />
-                How It Works
+                <Sparkles className="w-4 h-4 text-[#B7FF3C]" />
+                Find My Perfect Turf
               </button>
             </div>
 
@@ -135,8 +149,8 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onHowItWorksClick })
               <div className="mt-3 flex items-start gap-2 p-3 rounded-xl bg-[#131B22]/90 border border-[#23303B] text-neutral-400 animate-subtle-float">
                 <ShieldAlert className="w-4 h-4 text-[#B7FF3C] shrink-0 mt-0.5" />
                 <p className="text-[11px] leading-tight">
-                  <strong className="text-neutral-200">Demonstration Model:</strong> Venue listings,
-                  photographs, and pricing are curated demo data created for Phase 1 frontend evaluation.
+                  <strong className="text-neutral-200">Demonstration Platform:</strong> Venue listings,
+                  photographs, and pricing are illustrative demo data showcase records.
                 </p>
               </div>
             </div>

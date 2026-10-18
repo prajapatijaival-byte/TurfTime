@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
 
             <div className="flex items-center gap-2 text-[11px] text-neutral-400">
               <ShieldCheck className="w-3.5 h-3.5 text-[#B7FF3C]" />
-              <span>Built for Web Development Internship Technical Assessment</span>
+              <span>Independent Sports Venue Discovery Platform</span>
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export const Footer: React.FC = () => {
                   onClick={(e) => scrollTo(e, '#faq')}
                   className="hover:text-white transition-colors"
                 >
-                  FAQ & Roadmap
+                  Frequently Asked Questions
                 </a>
               </li>
             </ul>
@@ -104,15 +104,15 @@ export const Footer: React.FC = () => {
           {/* Technical Architecture Notes */}
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Phase 1 Tech Stack
+              Technical Stack
             </h4>
             <ul className="space-y-1.5 text-xs text-neutral-400">
               <li>• Next.js 16 (App Router)</li>
               <li>• React 19 & TypeScript</li>
               <li>• Tailwind CSS v4 Theme</li>
-              <li>• Lucide React Icons</li>
-              <li>• Planned Phase 2: Supabase PostgreSQL</li>
-              <li>• Planned Deployment: Vercel</li>
+              <li>• Supabase PostgreSQL (Connected)</li>
+              <li>• Transparent Rule-Based Match Finder</li>
+              <li>• Production Ready for Vercel</li>
             </ul>
           </div>
         </div>
@@ -120,9 +120,9 @@ export const Footer: React.FC = () => {
         {/* Demo Disclaimer & Copyright Notice */}
         <div className="pt-8 border-t border-[#23303B]/60 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-[11px] text-neutral-400">
           <p className="max-w-2xl leading-relaxed">
-            <strong className="text-neutral-300">Disclaimer:</strong> TurfTime is an internship
-            assessment demonstration project. Venue titles, imagery, pricing figures, and time slots
-            are simulated illustrative records and do not depict verified commercial entities. No
+            <strong className="text-neutral-300">Disclaimer:</strong> TurfTime is a sports venue discovery
+            demonstration platform. Venue titles, imagery, pricing figures, and time slots
+            are illustrative showcase records and do not depict verified commercial entities. No
             monetary transactions or active bookings are processed.
           </p>
 

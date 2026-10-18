@@ -27,8 +27,7 @@ export const FAQAccordion: React.FC = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-sm sm:text-base text-neutral-400">
-            Clear, honest details regarding this technical assessment prototype, demo data, and the
-            roadmap for Phase 2.
+            Clear, honest answers regarding how TurfTime works, venue specifications, our Match Finder feature, and how requests are securely handled in Supabase.
           </p>
         </ScrollReveal>
 
@@ -87,11 +86,11 @@ export const FAQAccordion: React.FC = () => {
 
 
 
-        {/* Honest Prototype Notice */}
+        {/* Honest Architecture Notice */}
         <div className="mt-12 p-4 rounded-xl bg-[#131B22]/50 border border-[#23303B] flex items-center gap-3 text-xs text-neutral-400">
           <ShieldAlert className="w-4 h-4 text-[#B7FF3C] shrink-0" />
           <span>
-            Have technical assessment questions? The entire codebase adheres strictly to Phase 1 constraints: frontend verification only, with genuine backend and persistent database storage slated for Phase 2.
+            Have questions about booking security? TurfTime integrates a secure Next.js Route Handler and Supabase PostgreSQL database to persist validated booking inquiries in Pending status under least-privilege Row Level Security.
           </span>
         </div>
       </div>
